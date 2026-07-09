@@ -1,14 +1,10 @@
 <div align="center">
 
+<img src="docs/assets/brand/opencodex-mark.svg" alt="OpenCodeX" width="96" height="96" />
+
 ```
-   ╔══════════════════════════════════════════╗
-   ║                                          ║
-   ║   █▀█ █▀█ █▀▀ █▄░█ █▀▀ █▀█ █▀▄ █▀▀ █░█   ║
-   ║   █▄█ █▀▀ ██▄ █░▀█ █▄▄ █▄█ █▄▀ ██▄ ▄▀▄   ║
-   ║                                          ║
-   ║        ide + cli · one messy core        ║
-   ║              (´･_･`)                     ║
-   ╚══════════════════════════════════════════╝
+   ide + cli · one messy core
+         (´･_･`)
 ```
 
 # OpenCodeX

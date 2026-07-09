@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">OpenCodeX</title>
+  <desc id="desc">Minimal monogram: letter O with an X inside. Flat Apple-style mark.</desc>
+  <!-- App tile: soft black, continuous corner radius (≈22.5%) -->
+  <rect width="512" height="512" rx="115" fill="#0B0B0C"/>
+  <!-- O ring -->
+  <circle
+    cx="256"
+    cy="256"
+    r="132"
+    fill="none"
+    stroke="#F5F5F7"
+    stroke-width="36"
+  />
+  <!-- X, same weight as the ring, centered inside the O -->
+  <path
+    d="M188 188 L324 324 M324 188 L188 324"
+    fill="none"
+    stroke="#F5F5F7"
+    stroke-width="36"
+    stroke-linecap="round"
+  />
+</svg>
