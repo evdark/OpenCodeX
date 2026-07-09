@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">OpenCode+ mark</title>
+  <desc id="desc">A minimal dark square mark with an OpenCode+ monogram.</desc>
+  <defs>
+    <linearGradient id="surface" x1="64" y1="48" x2="448" y2="464" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#111827" />
+      <stop offset="0.55" stop-color="#0f172a" />
+      <stop offset="1" stop-color="#0f766e" />
+    </linearGradient>
+    <linearGradient id="accent" x1="150" y1="130" x2="384" y2="386" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f8fafc" />
+      <stop offset="1" stop-color="#a7f3d0" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="88" fill="url(#surface)" />
+  <path d="M143 256c0-66 48-113 115-113 44 0 82 21 101 56l-45 27c-11-20-30-32-56-32-37 0-63 26-63 62s26 62 63 62c26 0 45-12 56-32l45 27c-19 35-57 56-101 56-67 0-115-47-115-113Z" fill="url(#accent)" />
+  <path d="M369 139h40v52h52v40h-52v52h-40v-52h-52v-40h52v-52Z" fill="#f8fafc" />
+</svg>

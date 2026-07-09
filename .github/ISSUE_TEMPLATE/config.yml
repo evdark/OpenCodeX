@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussions
+    url: https://github.com/evdark/opencode-plus/discussions
+    about: Ask setup questions, share workflows, and discuss early ideas.
+  - name: Security report
+    url: https://github.com/evdark/opencode-plus/security/advisories/new
+    about: Report vulnerabilities privately.
+  - name: Upstream OpenCode
+    url: https://github.com/anomalyco/opencode
+    about: Use upstream for issues that reproduce only in official OpenCode.

@@ -1,0 +1,61 @@
+# Recommended labels for OpenCode+. Sync with a label-management action or apply manually.
+
+- name: bug
+  color: d73a4a
+  description: Something is broken or behaves incorrectly.
+
+- name: enhancement
+  color: 2563eb
+  description: A focused product or developer-experience improvement.
+
+- name: question
+  color: 7c3aed
+  description: Setup, usage, or workflow help.
+
+- name: idea
+  color: a855f7
+  description: Early product direction or workflow exploration.
+
+- name: documentation
+  color: 0f766e
+  description: Documentation, examples, metadata, or repository presentation.
+
+- name: security
+  color: b91c1c
+  description: Security-sensitive work. Public issues should not disclose vulnerabilities.
+
+- name: provider
+  color: 0891b2
+  description: Provider catalog, auth, models, or custom endpoint behavior.
+
+- name: desktop
+  color: 4f46e5
+  description: Desktop app, updater, sidecar, packaging, or recovery behavior.
+
+- name: cli
+  color: 111827
+  description: Command-line behavior, install, upgrade, or terminal UX.
+
+- name: context
+  color: 65a30d
+  description: Context selection, memory, compaction, or diagnostics.
+
+- name: prompt-queue
+  color: f59e0b
+  description: Prompt staging, follow-up flow, queue persistence, or composer behavior.
+
+- name: upstream-sync
+  color: 64748b
+  description: OpenCode merge, conflict, divergence, or compatibility work.
+
+- name: good first issue
+  color: 22c55e
+  description: Small, well-scoped contribution for new contributors.
+
+- name: needs reproduction
+  color: fb923c
+  description: More detail is needed before maintainers can act.
+
+- name: blocked
+  color: 94a3b8
+  description: Waiting on external input, upstream change, or release artifact.

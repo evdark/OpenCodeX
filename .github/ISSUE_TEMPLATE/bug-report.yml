@@ -1,0 +1,99 @@
+name: Bug report
+description: Report something broken, confusing, or inconsistent in OpenCode+.
+title: "fix: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve OpenCode+. Keep the report focused and remove secrets from logs.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues and discussions.
+          required: true
+        - label: I removed API keys, tokens, and private project data from this report.
+          required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect instead?
+      placeholder: OpenCode+ did X. I expected Y.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Give the shortest reliable reproduction you can.
+      placeholder: |
+        1. Run ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: How does this affect your workflow?
+      placeholder: Blocks desktop startup, prevents provider auth, breaks a command, etc.
+    validations:
+      required: false
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v1.17.15, commit SHA, or "dev branch"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Surface
+      options:
+        - CLI
+        - Desktop
+        - Web app
+        - Provider
+        - Plugin or MCP
+        - Documentation
+        - Release or update
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: macOS 26, Ubuntu 24.04, Windows 11
+    validations:
+      required: false
+
+  - type: input
+    id: provider
+    attributes:
+      label: Provider and model
+      placeholder: anthropic/claude-sonnet-4, openai/gpt-5.1, custom endpoint
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs, screenshots, or session links
+      description: Paste short redacted logs or attach screenshots.
+      placeholder: Drag files here or paste short output.
+    validations:
+      required: false

@@ -1,0 +1,140 @@
+name: upstream sync
+
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+    inputs:
+      upstream_branch:
+        description: "Original OpenCode branch to merge"
+        required: false
+        default: "dev"
+      target_branch:
+        description: "Fork branch that receives the sync PR"
+        required: false
+        default: "dev"
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: upstream-sync-${{ github.event.inputs.target_branch || 'dev' }}
+  cancel-in-progress: false
+
+env:
+  UPSTREAM_REPOSITORY: anomalyco/opencode
+  UPSTREAM_BRANCH: ${{ github.event.inputs.upstream_branch || 'dev' }}
+  TARGET_BRANCH: ${{ github.event.inputs.target_branch || 'dev' }}
+  SYNC_BRANCH: auto-upstream-sync
+  GH_TOKEN: ${{ github.token }}
+
+jobs:
+  sync:
+    name: open upstream sync PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+          token: ${{ github.token }}
+
+      - name: Configure git identity
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+
+      - name: Fetch branches
+        run: |
+          git remote add upstream "https://github.com/${UPSTREAM_REPOSITORY}.git"
+          git fetch origin "${TARGET_BRANCH}"
+          git fetch origin "${SYNC_BRANCH}" || true
+          git fetch upstream "${UPSTREAM_BRANCH}"
+
+      - name: Merge upstream into sync branch
+        id: merge
+        run: |
+          git checkout -B "${SYNC_BRANCH}" "origin/${TARGET_BRANCH}"
+          if git merge --no-ff --no-edit "upstream/${UPSTREAM_BRANCH}"; then
+            echo "conflicted=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git diff --name-only --diff-filter=U | sort > upstream-sync-conflicts.txt
+          git merge --abort
+          echo "conflicted=true" >> "$GITHUB_OUTPUT"
+
+      - name: Report merge conflicts
+        if: steps.merge.outputs.conflicted == 'true'
+        run: |
+          title="Upstream sync conflicts"
+          {
+            echo "Automatic upstream sync could not merge \`${UPSTREAM_REPOSITORY}:${UPSTREAM_BRANCH}\` into \`${TARGET_BRANCH}\`."
+            echo
+            echo "Resolve these conflicts manually, then rerun the workflow. The fork target branch was not modified."
+            echo
+            echo "Conflicting files:"
+            while IFS= read -r file; do
+              echo "- \`${file}\`"
+            done < upstream-sync-conflicts.txt
+          } > upstream-sync-conflict-body.md
+
+          issue=$(gh issue list --state open --search "${title} in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --body-file upstream-sync-conflict-body.md
+            exit 1
+          fi
+
+          gh issue create --title "$title" --body-file upstream-sync-conflict-body.md
+          exit 1
+
+      - name: Check for upstream changes
+        id: changes
+        if: steps.merge.outputs.conflicted == 'false'
+        run: |
+          if git diff --quiet "origin/${TARGET_BRANCH}".."${SYNC_BRANCH}"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Push sync branch
+        if: steps.changes.outputs.changed == 'true'
+        run: git push origin "${SYNC_BRANCH}" --force-with-lease
+
+      - name: Open or update sync PR
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          title="chore: sync upstream OpenCode"
+          {
+            echo "### What does this PR do?"
+            echo
+            echo "Merges \`${UPSTREAM_REPOSITORY}:${UPSTREAM_BRANCH}\` into this fork's \`${TARGET_BRANCH}\` branch."
+            echo
+            echo "This PR is intentionally opened instead of auto-merging so fork-specific changes can be reviewed before they land."
+            echo
+            echo "### How did you verify your code works?"
+            echo
+            echo "CI should run on this PR. Manual review is required before merging."
+            echo
+            echo "### Checklist"
+            echo
+            echo "- [ ] I reviewed conflicts or high-risk upstream changes"
+            echo "- [ ] I confirmed fork-specific features still behave correctly"
+          } > upstream-sync-pr-body.md
+
+          pr=$(gh pr list --head "${SYNC_BRANCH}" --base "${TARGET_BRANCH}" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --title "$title" --body-file upstream-sync-pr-body.md
+            exit 0
+          fi
+
+          gh pr create --head "${SYNC_BRANCH}" --base "${TARGET_BRANCH}" --title "$title" --body-file upstream-sync-pr-body.md
+
+      - name: Start validation workflows
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          gh workflow run typecheck.yml --ref "${SYNC_BRANCH}" || true
+          gh workflow run test.yml --ref "${SYNC_BRANCH}" || true

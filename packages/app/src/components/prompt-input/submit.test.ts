@@ -1,0 +1,526 @@
+import { beforeAll, beforeEach, describe, expect, mock, test } from "bun:test"
+import type { Prompt } from "@/context/prompt"
+import type { FollowupDraft } from "./submit"
+
+let createPromptSubmit: typeof import("./submit").createPromptSubmit
+let sendFollowupDraft: typeof import("./submit").sendFollowupDraft
+
+type StoredSession = { id: string; title?: string }
+
+const createdClients: string[] = []
+const createdSessions: string[] = []
+const enabledAutoAccept: Array<{ sessionID: string; directory: string }> = []
+const optimistic: Array<{
+  directory?: string
+  sessionID?: string
+  message: {
+    agent: string
+    model: { providerID: string; modelID: string }
+    variant?: string
+  }
+}> = []
+const optimisticSeeded: boolean[] = []
+const storedSessions: Record<string, StoredSession[]> = {}
+const promoted: Array<{ directory: string; sessionID: string }> = []
+const sentShell: string[] = []
+const syncedDirectories: string[] = []
+const promotedDrafts: Array<{ draftID: string; server: string; sessionId: string }> = []
+const queuedDrafts: FollowupDraft[] = []
+const durablePrompts: Array<{ sessionID: string; id?: string; delivery?: "steer" | "queue"; text?: string }> = []
+
+let params: { id?: string } = {}
+let search: { draftId?: string } = {}
+let selected = "/repo/worktree-a"
+let variant: string | undefined
+
+const promptValue: Prompt = [{ type: "text", content: "ls", start: 0, end: 2 }]
+
+function isStoredSessionList(value: unknown): value is StoredSession[] {
+  return (
+    Array.isArray(value) &&
+    value.every((item) => typeof item === "object" && item !== null && "id" in item && typeof item.id === "string")
+  )
+}
+
+function isStoredSessionUpdater(value: unknown): value is (sessions: StoredSession[]) => unknown {
+  return typeof value === "function"
+}
+
+const prompt = {
+  ready: Object.assign(() => true, { promise: Promise.resolve(true) }),
+  current: () => promptValue,
+  cursor: () => 0,
+  dirty: () => true,
+  reset: () => undefined,
+  set: () => undefined,
+  context: {
+    add: () => undefined,
+    remove: () => undefined,
+    removeComment: () => undefined,
+    updateComment: () => undefined,
+    replaceComments: () => undefined,
+    items: () => [],
+  },
+  capture: () => prompt,
+}
+
+const clientFor = (directory: string) => {
+  createdClients.push(directory)
+    return {
+      v2: {
+        session: {
+          prompt: async (input: { sessionID: string; id?: string; delivery?: "steer" | "queue"; prompt?: { text: string } }) => {
+            durablePrompts.push({ sessionID: input.sessionID, id: input.id, delivery: input.delivery, text: input.prompt?.text })
+            return { data: undefined }
+          },
+        },
+      },
+      session: {
+      create: async () => {
+        createdSessions.push(directory)
+        return {
+          data: {
+            id: `session-${createdSessions.length}`,
+            title: `New session ${createdSessions.length}`,
+          },
+        }
+      },
+      shell: async () => {
+        sentShell.push(directory)
+        return { data: undefined }
+      },
+      prompt: async () => ({ data: undefined }),
+      promptAsync: async () => ({ data: undefined }),
+      command: async () => ({ data: undefined }),
+      abort: async () => ({ data: undefined }),
+    },
+    worktree: {
+      create: async () => ({ data: { directory: `${directory}/new` } }),
+    },
+  }
+}
+
+beforeAll(async () => {
+  const rootClient = clientFor("/repo/main")
+
+  mock.module("@solidjs/router", () => ({
+    useNavigate: () => () => undefined,
+    useParams: () => params,
+    useLocation: () => ({}),
+    useSearchParams: () => [search, () => undefined],
+  }))
+
+  mock.module("@opencode-ai/sdk/v2/client", () => ({
+    createOpencodeClient: (input: { directory: string }) => {
+      createdClients.push(input.directory)
+      return clientFor(input.directory)
+    },
+  }))
+
+  mock.module("@opencode-ai/ui/toast", () => ({
+    Toast: { Region: () => null },
+    showToast: () => 0,
+  }))
+
+  mock.module("@opencode-ai/core/util/encode", () => ({
+    base64Encode: (value: string) => value,
+    base64Decode: (value: string) => value,
+  }))
+
+  mock.module("@/context/local", () => ({
+    useLocal: () => ({
+      model: {
+        current: () => ({ id: "model", provider: { id: "provider" } }),
+        variant: { current: () => variant },
+      },
+      agent: {
+        current: () => ({ name: "agent" }),
+      },
+      session: {
+        promote(directory: string, sessionID: string) {
+          promoted.push({ directory, sessionID })
+        },
+      },
+    }),
+  }))
+
+  mock.module("@/context/permission", () => ({
+    usePermission: () => ({
+      enableAutoAccept(sessionID: string, directory: string) {
+        enabledAutoAccept.push({ sessionID, directory })
+      },
+    }),
+  }))
+
+  mock.module("@/context/server", () => ({
+    ServerConnection: {
+      Key: { make: (value: string) => value },
+    },
+    useServer: () => ({ key: "server-key" }),
+  }))
+
+  mock.module("@/context/tabs", () => ({
+    useTabs: () => ({
+      draft: () => ({ server: "project-server" }),
+      promoteDraft: (draftID: string, session: { server: string; sessionId: string }) => {
+        promotedDrafts.push({ draftID, ...session })
+      },
+    }),
+  }))
+
+  mock.module("@/context/prompt", () => ({
+    usePrompt: () => prompt,
+  }))
+
+  mock.module("@/context/layout", () => ({
+    useLayout: () => ({
+      handoff: {
+        setTabs: () => undefined,
+      },
+    }),
+  }))
+
+  mock.module("@/context/sdk", () => ({
+    useSDK: () => {
+      const sdk = {
+        scope: "local",
+        directory: "/repo/main",
+        client: rootClient,
+        url: "http://localhost:4096",
+        createClient(opts: { directory: string }) {
+          return clientFor(opts.directory)
+        },
+      }
+      return () => sdk
+    },
+  }))
+
+  mock.module("@/context/sync", () => ({
+    useSync: () => () => ({
+      data: { command: [] },
+      session: {
+        optimistic: {
+          add: (value: {
+            directory?: string
+            sessionID?: string
+            message: { agent: string; model: { providerID: string; modelID: string; variant?: string } }
+          }) => {
+            optimistic.push(value)
+            optimisticSeeded.push(
+              !!value.directory &&
+                !!value.sessionID &&
+                !!storedSessions[value.directory]?.find((item) => item.id === value.sessionID)?.title,
+            )
+          },
+          remove: () => undefined,
+        },
+      },
+      set: () => undefined,
+    }),
+  }))
+
+  mock.module("@/context/server-sync", () => ({
+    useServerSync: () => () => ({
+      session: {
+        remember: () => undefined,
+        set: () => undefined,
+      },
+      child: (directory: string) => {
+        syncedDirectories.push(directory)
+        storedSessions[directory] ??= []
+        return [
+          { session: storedSessions[directory] },
+          (...args: unknown[]) => {
+            if (args[0] !== "session") return
+            const next = args[1]
+            if (isStoredSessionUpdater(next)) {
+              const value = next(storedSessions[directory])
+              if (isStoredSessionList(value)) storedSessions[directory] = value
+              return
+            }
+            if (isStoredSessionList(next)) storedSessions[directory] = next
+          },
+        ]
+      },
+    }),
+  }))
+
+  mock.module("@/context/platform", () => ({
+    usePlatform: () => ({
+      fetch: fetch,
+    }),
+  }))
+
+  mock.module("@/context/language", () => ({
+    useLanguage: () => ({
+      t: (key: string) => key,
+      locale: () => "en",
+      intl: () => "en",
+      locales: ["en"] as const,
+      label: (value: string) => value,
+      setLocale: () => undefined,
+      ready: Object.assign(() => true, { promise: Promise.resolve(true) }),
+    }),
+  }))
+
+  mock.module("@/context/settings", () => ({
+    useSettings: () => ({
+      ready: Object.assign(() => true, { promise: Promise.resolve(true) }),
+      opencodePlus: {
+        improvedErrorMessages: { enabled: () => false },
+        customSystemPrompt: {
+          enabled: () => false,
+          mode: () => "append" as const,
+          prompt: () => "",
+          profilePrompts: () => false,
+        },
+        promptQueue: {
+          enabled: () => false,
+          suggestedFollowups: () => false,
+          mode: () => "automatic" as const,
+        },
+      },
+      general: {
+        followup: () => "queue",
+      },
+    }),
+  }))
+
+  const mod = await import("./submit")
+  createPromptSubmit = mod.createPromptSubmit
+  sendFollowupDraft = mod.sendFollowupDraft
+})
+
+beforeEach(() => {
+  createdClients.length = 0
+  createdSessions.length = 0
+  enabledAutoAccept.length = 0
+  optimistic.length = 0
+  optimisticSeeded.length = 0
+  promoted.length = 0
+  promotedDrafts.length = 0
+  queuedDrafts.length = 0
+  durablePrompts.length = 0
+  params = {}
+  search = {}
+  sentShell.length = 0
+  syncedDirectories.length = 0
+  selected = "/repo/worktree-a"
+  variant = undefined
+  for (const key of Object.keys(storedSessions)) delete storedSessions[key]
+})
+
+describe("prompt submit worktree selection", () => {
+  test("reads the latest worktree accessor value per submit", async () => {
+    const submit = createPromptSubmit({
+      prompt,
+      info: () => undefined,
+      imageAttachments: () => [],
+      commentCount: () => 0,
+      autoAccept: () => false,
+      mode: () => "shell",
+      working: () => false,
+      editor: () => undefined,
+      queueScroll: () => undefined,
+      promptLength: (value) => value.reduce((sum, part) => sum + ("content" in part ? part.content.length : 0), 0),
+      addToHistory: () => undefined,
+      resetHistoryNavigation: () => undefined,
+      setMode: () => undefined,
+      setPopover: () => undefined,
+      newSessionWorktree: () => selected,
+      onNewSessionWorktreeReset: () => undefined,
+      onSubmit: () => undefined,
+    })
+
+    const event = new Event("submit")
+
+    await submit.handleSubmit(event)
+    selected = "/repo/worktree-b"
+    await submit.handleSubmit(event)
+
+    expect(createdClients).toEqual(["/repo/worktree-a", "/repo/worktree-b"])
+    expect(createdSessions).toEqual(["/repo/worktree-a", "/repo/worktree-b"])
+    expect(sentShell).toEqual(["/repo/worktree-a", "/repo/worktree-b"])
+    expect(syncedDirectories).toEqual(["/repo/worktree-a", "/repo/worktree-a", "/repo/worktree-b", "/repo/worktree-b"])
+    expect(promoted).toEqual([
+      { directory: "/repo/worktree-a", sessionID: "session-1" },
+      { directory: "/repo/worktree-b", sessionID: "session-2" },
+    ])
+    expect(syncedDirectories).toEqual(["/repo/worktree-a", "/repo/worktree-a", "/repo/worktree-b", "/repo/worktree-b"])
+  })
+
+  test("applies auto-accept to newly created sessions", async () => {
+    const submit = createPromptSubmit({
+      prompt,
+      info: () => undefined,
+      imageAttachments: () => [],
+      commentCount: () => 0,
+      autoAccept: () => true,
+      mode: () => "shell",
+      working: () => false,
+      editor: () => undefined,
+      queueScroll: () => undefined,
+      promptLength: (value) => value.reduce((sum, part) => sum + ("content" in part ? part.content.length : 0), 0),
+      addToHistory: () => undefined,
+      resetHistoryNavigation: () => undefined,
+      setMode: () => undefined,
+      setPopover: () => undefined,
+      newSessionWorktree: () => selected,
+      onNewSessionWorktreeReset: () => undefined,
+      onSubmit: () => undefined,
+    })
+
+    const event = new Event("submit")
+
+    await submit.handleSubmit(event)
+
+    expect(enabledAutoAccept).toEqual([{ sessionID: "session-1", directory: "/repo/worktree-a" }])
+  })
+
+  test("promotes drafts using the selected project's server", async () => {
+    search = { draftId: "draft-1" }
+    const submit = createPromptSubmit({
+      prompt,
+      info: () => undefined,
+      imageAttachments: () => [],
+      commentCount: () => 0,
+      autoAccept: () => false,
+      mode: () => "normal",
+      working: () => false,
+      editor: () => undefined,
+      queueScroll: () => undefined,
+      promptLength: (value) => value.reduce((sum, part) => sum + ("content" in part ? part.content.length : 0), 0),
+      addToHistory: () => undefined,
+      resetHistoryNavigation: () => undefined,
+      setMode: () => undefined,
+      setPopover: () => undefined,
+      newSessionWorktree: () => selected,
+      onNewSessionWorktreeReset: () => undefined,
+      onSubmit: () => undefined,
+    })
+
+    await submit.handleSubmit(new Event("submit"))
+
+    expect(promotedDrafts).toEqual([{ draftID: "draft-1", server: "project-server", sessionId: "session-1" }])
+  })
+
+  test("includes the selected variant on optimistic prompts", async () => {
+    params = { id: "session-1" }
+    variant = "high"
+
+    const submit = createPromptSubmit({
+      prompt,
+      info: () => ({ id: "session-1" }),
+      imageAttachments: () => [],
+      commentCount: () => 0,
+      autoAccept: () => false,
+      mode: () => "normal",
+      working: () => false,
+      editor: () => undefined,
+      queueScroll: () => undefined,
+      promptLength: (value) => value.reduce((sum, part) => sum + ("content" in part ? part.content.length : 0), 0),
+      addToHistory: () => undefined,
+      resetHistoryNavigation: () => undefined,
+      setMode: () => undefined,
+      setPopover: () => undefined,
+      onSubmit: () => undefined,
+    })
+
+    const event = new Event("submit")
+
+    await submit.handleSubmit(event)
+
+    expect(optimistic).toHaveLength(1)
+    expect(optimistic[0]).toMatchObject({
+      message: {
+        agent: "agent",
+        model: { providerID: "provider", modelID: "model", variant: "high" },
+      },
+    })
+  })
+
+  test("queues normal follow-up drafts instead of sending while queue mode is active", async () => {
+    params = { id: "session-1" }
+    const submit = createPromptSubmit({
+      prompt,
+      info: () => ({ id: "session-1" }),
+      imageAttachments: () => [],
+      commentCount: () => 0,
+      autoAccept: () => false,
+      mode: () => "normal",
+      working: () => true,
+      editor: () => undefined,
+      queueScroll: () => undefined,
+      promptLength: (value) => value.reduce((sum, part) => sum + ("content" in part ? part.content.length : 0), 0),
+      addToHistory: () => undefined,
+      resetHistoryNavigation: () => undefined,
+      setMode: () => undefined,
+      setPopover: () => undefined,
+      shouldQueue: () => true,
+      onQueue: (draft) => queuedDrafts.push(draft),
+      onSubmit: () => undefined,
+    })
+
+    await submit.handleSubmit(new Event("submit"))
+
+    expect(queuedDrafts).toHaveLength(1)
+    expect(queuedDrafts[0]).toMatchObject({
+      sessionID: "session-1",
+      sessionDirectory: "/repo/main",
+      agent: "agent",
+      model: { providerID: "provider", modelID: "model" },
+    })
+    expect(optimistic).toHaveLength(0)
+  })
+
+  test("sends manual queued follow-ups through durable queue delivery", async () => {
+    await sendFollowupDraft({
+      client: clientFor("/repo/main") as never,
+      sync: { data: { command: [] } } as never,
+      serverSync: { session: { set: () => undefined } } as never,
+      draft: {
+        sessionID: "session-1",
+        sessionDirectory: "/repo/main",
+        prompt: [{ type: "text", content: "continue", start: 0, end: 8 }],
+        context: [],
+        agent: "agent",
+        model: { providerID: "provider", modelID: "model" },
+      },
+      messageID: "queued-1",
+      delivery: "queue",
+    })
+
+    expect(durablePrompts).toEqual([
+      { sessionID: "session-1", id: "queued-1", delivery: "queue", text: "continue" },
+    ])
+  })
+
+  test("seeds new sessions before optimistic prompts are added", async () => {
+    const submit = createPromptSubmit({
+      prompt,
+      info: () => undefined,
+      imageAttachments: () => [],
+      commentCount: () => 0,
+      autoAccept: () => false,
+      mode: () => "normal",
+      working: () => false,
+      editor: () => undefined,
+      queueScroll: () => undefined,
+      promptLength: (value) => value.reduce((sum, part) => sum + ("content" in part ? part.content.length : 0), 0),
+      addToHistory: () => undefined,
+      resetHistoryNavigation: () => undefined,
+      setMode: () => undefined,
+      setPopover: () => undefined,
+      newSessionWorktree: () => selected,
+      onNewSessionWorktreeReset: () => undefined,
+      onSubmit: () => undefined,
+    })
+
+    const event = new Event("submit")
+
+    await submit.handleSubmit(event)
+
+    expect(storedSessions["/repo/worktree-a"]).toEqual([{ id: "session-1", title: "New session 1" }])
+    expect(optimisticSeeded).toEqual([true])
+  })
+})

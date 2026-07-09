@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Thin shim → CommonJS launcher (package "type": "module" breaks extensionless .js as CJS).
+set -euo pipefail
+export OPENCODE_PLUS=1
+export OPENCODE_APP_NAME="${OPENCODE_APP_NAME:-ocplus}"
+DIR="$(cd "$(dirname "$0")" && pwd)"
+exec node "$DIR/ocplus.cjs" "$@"
