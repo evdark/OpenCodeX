@@ -1,0 +1,39 @@
+name: Question
+description: Ask for help with setup, configuration, providers, or workflow.
+title: "question: "
+labels:
+  - question
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What are you trying to understand or accomplish?
+      placeholder: I am trying to ...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Installation
+        - Provider setup
+        - Configuration
+        - Desktop
+        - CLI
+        - Plugins or MCP
+        - Development
+        - Releases
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Add commands, config snippets, screenshots, or logs if they help. Remove secrets first.
+    validations:
+      required: false

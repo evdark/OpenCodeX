@@ -1,0 +1,73 @@
+name: Feature request
+description: Propose a focused improvement for OpenCode+.
+title: "feat: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Strong feature requests describe a real workflow and the smallest useful version.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Preflight
+      options:
+        - label: I searched existing issues, discussions, and the roadmap.
+          required: true
+        - label: This request is for OpenCode+ rather than official upstream OpenCode.
+          required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What workflow is painful or missing?
+      placeholder: When I am working on ..., I need ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should OpenCode+ do?
+      placeholder: Add ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What have you tried, and why is it not enough?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - AI experience
+        - Provider management
+        - Context engine
+        - Prompt queue
+        - Desktop
+        - CLI
+        - Plugins or MCP
+        - Documentation
+        - Release process
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: upstream
+    attributes:
+      label: Upstream compatibility
+      description: Would this require changing upstream-owned files or diverging from OpenCode behavior?
+      placeholder: No known risk, or describe the risk.
+    validations:
+      required: false

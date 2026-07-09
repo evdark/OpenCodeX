@@ -1,0 +1,32 @@
+title: "Idea: "
+labels:
+  - idea
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use ideas for early product direction. If you have a precise bug or feature request, use Issues instead.
+
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow
+      description: What workflow would this improve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: Idea
+      description: Describe the shape of the improvement.
+    validations:
+      required: true
+
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: Tradeoffs
+      description: What complexity, compatibility, or maintenance risk might this add?
+    validations:
+      required: false

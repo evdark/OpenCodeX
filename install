@@ -1,0 +1,321 @@
+#!/usr/bin/env bash
+set -euo pipefail
+APP=opencode
+APP_NAME="OpenCodeX"
+RELEASE_OWNER=${OPENCODE_RELEASE_OWNER:-evdark}
+RELEASE_REPO=${OPENCODE_RELEASE_REPO:-OpenCodeX}
+RELEASE_REPOSITORY=${OPENCODE_RELEASE_REPOSITORY:-$RELEASE_OWNER/$RELEASE_REPO}
+RELEASE_DIRECTORY=${RELEASE_REPOSITORY##*/}
+
+MUTED='\033[0;2m'
+RED='\033[0;31m'
+ORANGE='\033[38;5;214m'
+NC='\033[0m' # No Color
+
+usage() {
+    cat <<EOF
+OpenCodeX CLI installer  (∩︵∩)
+
+Installs the terminal product from the latest GitHub release:
+  - opencode  → engine binary (scripts / plain mode)
+  - ocx       → same binary + OpenCodeX CLI branding / features
+
+This is the CLI path. For the Desktop IDE (dmg / exe / AppImage):
+
+  https://github.com/$RELEASE_REPOSITORY/releases/latest
+
+If no release exists yet, use source:
+
+    git clone https://github.com/$RELEASE_REPOSITORY.git && cd $RELEASE_DIRECTORY
+
+Usage: install [options]
+
+Options:
+    -h, --help              Show this help
+    -v, --version <version> Install a specific version (e.g. 1.0.0)
+    -b, --binary <path>     Install from a local binary instead of downloading
+        --no-modify-path    Don't touch shell config (.zshrc, .bashrc, …)
+
+Examples:
+    curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash
+    curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.0.0
+    ./install --binary /path/to/opencode
+EOF
+}
+
+requested_version=${VERSION:-}
+no_modify_path=false
+binary_path=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        -v|--version)
+            if [[ -n "${2:-}" ]]; then
+                requested_version="$2"
+                shift 2
+            else
+                echo -e "${RED}Error: --version needs a version argument${NC}"
+                exit 1
+            fi
+            ;;
+        -b|--binary)
+            if [[ -n "${2:-}" ]]; then
+                binary_path="$2"
+                shift 2
+            else
+                echo -e "${RED}Error: --binary needs a path${NC}"
+                exit 1
+            fi
+            ;;
+        --no-modify-path)
+            no_modify_path=true
+            shift
+            ;;
+        *)
+            echo -e "${ORANGE}Warning: unknown option '$1'${NC}" >&2
+            shift
+            ;;
+    esac
+done
+
+INSTALL_DIR=$HOME/.opencode/bin
+
+# If --binary is provided, skip all download/detection logic
+if [ -n "$binary_path" ]; then
+    if [ ! -f "$binary_path" ]; then
+        echo -e "${RED}Error: binary not found at ${binary_path}${NC}"
+        exit 1
+    fi
+    specific_version="local"
+else
+    raw_os=$(uname -s)
+    os=$(echo "$raw_os" | tr '[:upper:]' '[:lower:]')
+    case "$raw_os" in
+      Darwin*) os="darwin" ;;
+      Linux*) os="linux" ;;
+      MINGW*|MSYS*|CYGWIN*) os="windows" ;;
+    esac
+
+    arch=$(uname -m)
+    if [[ "$arch" == "aarch64" ]]; then
+      arch="arm64"
+    fi
+    if [[ "$arch" == "x86_64" ]]; then
+      arch="x64"
+    fi
+
+    if [ "$os" = "darwin" ] && [ "$arch" = "x64" ]; then
+      rosetta_flag=$(sysctl -n sysctl.proc_translated 2>/dev/null || echo 0)
+      if [ "$rosetta_flag" = "1" ]; then
+        arch="arm64"
+      fi
+    fi
+
+    combo="$os-$arch"
+    case "$combo" in
+      linux-x64|linux-arm64|darwin-x64|darwin-arm64|windows-x64)
+        ;;
+      *)
+        echo -e "${RED}Unsupported OS/Arch: $os/$arch${NC}"
+        exit 1
+        ;;
+    esac
+
+    archive_ext=".zip"
+    if [ "$os" = "linux" ]; then
+      archive_ext=".tar.gz"
+    fi
+
+    is_musl=false
+    if [ "$os" = "linux" ]; then
+      if [ -f /etc/alpine-release ]; then
+        is_musl=true
+      fi
+
+      if command -v ldd >/dev/null 2>&1; then
+        if ldd --version 2>&1 | grep -qi musl; then
+          is_musl=true
+        fi
+      fi
+    fi
+
+    needs_baseline=false
+    if [ "$arch" = "x64" ]; then
+      if [ "$os" = "linux" ]; then
+        if ! grep -qwi avx2 /proc/cpuinfo 2>/dev/null; then
+          needs_baseline=true
+        fi
+      fi
+
+      if [ "$os" = "darwin" ]; then
+        avx2=$(sysctl -n hw.optional.avx2_0 2>/dev/null || echo 0)
+        if [ "$avx2" != "1" ]; then
+          needs_baseline=true
+        fi
+      fi
+
+      if [ "$os" = "windows" ]; then
+        ps="(Add-Type -MemberDefinition \"[DllImport(\"\"kernel32.dll\"\")] public static extern bool IsProcessorFeaturePresent(int ProcessorFeature);\" -Name Kernel32 -Namespace Win32 -PassThru)::IsProcessorFeaturePresent(40)"
+        out=""
+        if command -v powershell.exe >/dev/null 2>&1; then
+          out=$(powershell.exe -NoProfile -NonInteractive -Command "$ps" 2>/dev/null || true)
+        elif command -v pwsh >/dev/null 2>&1; then
+          out=$(pwsh -NoProfile -NonInteractive -Command "$ps" 2>/dev/null || true)
+        fi
+        out=$(echo "$out" | tr -d '\r' | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
+        if [ "$out" != "true" ] && [ "$out" != "1" ]; then
+          needs_baseline=true
+        fi
+      fi
+    fi
+
+    target="$os-$arch"
+    if [ "$needs_baseline" = "true" ]; then
+      target="$target-baseline"
+    fi
+    if [ "$is_musl" = "true" ]; then
+      target="$target-musl"
+    fi
+
+    filename="$APP-$target$archive_ext"
+
+
+    if [ "$os" = "linux" ]; then
+        if ! command -v tar >/dev/null 2>&1; then
+             echo -e "${RED}Error: 'tar' is required but not installed.${NC}"
+             exit 1
+        fi
+    else
+        if ! command -v unzip >/dev/null 2>&1; then
+            echo -e "${RED}Error: 'unzip' is required but not installed.${NC}"
+            exit 1
+        fi
+    fi
+
+    if [ -z "$requested_version" ]; then
+        specific_version=$(curl -fsSL "https://api.github.com/repos/$RELEASE_REPOSITORY/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -1)
+        if [ -z "$specific_version" ]; then
+            echo -e "${RED}No published CLI release yet for $RELEASE_REPOSITORY.${NC}"
+            echo -e "Install from source, or wait for a release:"
+            echo -e "  git clone https://github.com/$RELEASE_REPOSITORY.git && cd $RELEASE_DIRECTORY"
+            echo -e "  bun install && bun run --cwd packages/opencode build"
+            exit 1
+        fi
+    else
+        specific_version=$requested_version
+    fi
+    specific_version=${specific_version#v}
+fi
+
+print_message() {
+    local level=$1
+    local message=$2
+    local color=""
+
+    case $level in
+        info) color="${NC}" ;;
+        warning) color="${ORANGE}" ;;
+        error) color="${RED}" ;;
+    esac
+
+    echo -e "${color}${message}${NC}"
+}
+
+print_message info "Installing ${APP_NAME} CLI ${MUTED}(engine + ocx)${NC}"
+if [ -n "$binary_path" ]; then
+  print_message info "${MUTED}from local binary${NC}"
+else
+  print_message info "${MUTED}version: ${specific_version}${NC}"
+fi
+
+tmp_dir=$(mktemp -d)
+cleanup() {
+  rm -rf "$tmp_dir"
+}
+trap cleanup EXIT
+
+if [ -z "$binary_path" ]; then
+    url="https://github.com/${RELEASE_REPOSITORY}/releases/download/v${specific_version}/${filename}"
+
+    if ! curl -fsSL --fail "$url" -o "$tmp_dir/$filename"; then
+        print_message error "Failed to download $url"
+        print_message error "Check that release v${specific_version} exists and includes ${filename}"
+        exit 1
+    fi
+
+    if [ "$os" = "linux" ]; then
+        tar -xzf "$tmp_dir/$filename" -C "$tmp_dir"
+    else
+        unzip -q "$tmp_dir/$filename" -d "$tmp_dir"
+    fi
+
+    # archive layout: opencode / opencode.exe at root or in bin/
+    extracted=""
+    for candidate in "$tmp_dir/opencode" "$tmp_dir/opencode.exe" "$tmp_dir/bin/opencode" "$tmp_dir/bin/opencode.exe"; do
+        if [ -f "$candidate" ]; then
+            extracted="$candidate"
+            break
+        fi
+    done
+    if [ -z "$extracted" ]; then
+        # nested folder from some builds
+        extracted=$(find "$tmp_dir" -type f \( -name 'opencode' -o -name 'opencode.exe' \) | head -1 || true)
+    fi
+    if [ -z "$extracted" ] || [ ! -f "$extracted" ]; then
+        print_message error "Could not find opencode binary in archive"
+        exit 1
+    fi
+    binary_path="$extracted"
+fi
+
+mkdir -p "$INSTALL_DIR"
+install_bin="$INSTALL_DIR/opencode"
+cp "$binary_path" "$install_bin"
+chmod +x "$install_bin"
+
+# ocx launcher: same binary, OpenCodeX env via wrapper
+cat > "$INSTALL_DIR/ocx" << 'WRAPPER'
+#!/usr/bin/env bash
+set -euo pipefail
+DIR="$(cd "$(dirname "$0")" && pwd)"
+export OPENCODEX=1
+export OPENCODE_PLUS=1
+export OPENCODE_APP_NAME="${OPENCODE_APP_NAME:-ocx}"
+exec "$DIR/opencode" "$@"
+WRAPPER
+chmod +x "$INSTALL_DIR/ocx"
+
+# legacy alias
+ln -sf ocx "$INSTALL_DIR/ocplus" 2>/dev/null || cp "$INSTALL_DIR/ocx" "$INSTALL_DIR/ocplus"
+
+print_message info "Installed:"
+print_message info "  $install_bin"
+print_message info "  $INSTALL_DIR/ocx"
+print_message info "  $INSTALL_DIR/ocplus  ${MUTED}(legacy alias)${NC}"
+
+# PATH
+path_line='export PATH="$HOME/.opencode/bin:$PATH"'
+if [ "$no_modify_path" = false ]; then
+  for rc in "$HOME/.zshrc" "$HOME/.bashrc" "$HOME/.bash_profile" "$HOME/.profile"; do
+    if [ -f "$rc" ] || [ "$rc" = "$HOME/.zshrc" ] || [ "$rc" = "$HOME/.bashrc" ]; then
+      touch "$rc"
+      if ! grep -qF '.opencode/bin' "$rc" 2>/dev/null; then
+        echo "" >> "$rc"
+        echo "# OpenCodeX CLI" >> "$rc"
+        echo "$path_line" >> "$rc"
+        print_message info "Updated PATH in $rc"
+      fi
+    fi
+  done
+fi
+
+echo ""
+print_message info "done. ${MUTED}(´･_･\`) open a new shell, then:${NC}"
+echo "  ocx --version"
+echo "  ocx dashboard"
+echo ""
+print_message info "IDE installers: https://github.com/${RELEASE_REPOSITORY}/releases/latest"
