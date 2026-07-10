@@ -59,9 +59,22 @@ Download the installer for your OS from the latest release.
 
 Unsigned builds: right-click → Open. Gatekeeper is dramatic. `(￣ヘ￣)`
 
-### Windows / Linux
+### Windows
 
-See the [release page](https://github.com/evdark/OpenCodeX/releases/latest) for exe / AppImage / deb / rpm.
+| Arch | Installer |
+| --- | --- |
+| x64 | [opencodex-desktop-win-x64.exe](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-win-x64.exe) |
+| arm64 | [opencodex-desktop-win-arm64.exe](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-win-arm64.exe) |
+
+### Linux
+
+| Format | Arch | File |
+| --- | --- | --- |
+| AppImage | x64 | [opencodex-desktop-linux-x86_64.AppImage](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-x86_64.AppImage) |
+| AppImage | arm64 | [opencodex-desktop-linux-arm64.AppImage](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-arm64.AppImage) |
+| deb | amd64 | [opencodex-desktop-linux-amd64.deb](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-amd64.deb) |
+
+rpm is not published in this release (packager machine needs `rpmbuild`).
 
 ---
 

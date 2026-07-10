@@ -83,9 +83,13 @@ grab an installer from releases. double-click. move on with your life.
 | mac apple silicon | [opencodex-desktop-mac-arm64.dmg](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-mac-arm64.dmg) |
 | mac intel | [opencodex-desktop-mac-x64.dmg](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-mac-x64.dmg) |
 | windows x64 | [opencodex-desktop-win-x64.exe](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-win-x64.exe) |
-| linux | AppImage / deb / rpm on the [release page](https://github.com/evdark/OpenCodeX/releases/latest) |
+| windows arm64 | [opencodex-desktop-win-arm64.exe](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-win-arm64.exe) |
+| linux x64 AppImage | [opencodex-desktop-linux-x86_64.AppImage](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-x86_64.AppImage) |
+| linux arm64 AppImage | [opencodex-desktop-linux-arm64.AppImage](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-arm64.AppImage) |
+| linux deb (amd64) | [opencodex-desktop-linux-amd64.deb](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-amd64.deb) |
 
-unsigned builds on mac may need a right-click → open. gatekeeper is a whole personality. `(￣ヘ￣)`
+mac: unsigned → right-click → open. gatekeeper is a personality. `(￣ヘ￣)`  
+rpm: not in this cut (needs `rpmbuild` on the packager).
 
 **releases:** https://github.com/evdark/OpenCodeX/releases/latest
 
