@@ -1,0 +1,108 @@
+name: fork cli release
+run-name: "cli release v${{ inputs.version }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version without the leading v"
+        required: true
+        type: string
+      publish:
+        description: "Publish the release after assets upload"
+        required: false
+        default: false
+        type: boolean
+      prerelease:
+        description: "Mark a newly-created release as a prerelease"
+        required: false
+        default: false
+        type: boolean
+
+concurrency: ${{ github.workflow }}-${{ inputs.version }}
+
+permissions:
+  contents: write
+
+jobs:
+  build-cli:
+    if: github.repository != 'anomalyco/opencode'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+
+      - uses: ./.github/actions/setup-bun
+
+      - name: Ensure draft release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          set -euo pipefail
+          version="${{ inputs.version }}"
+          version="${version#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid version: $version" >&2
+            exit 1
+          fi
+          tag="v${version}"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Using existing release $tag"
+          else
+            args=(release create "$tag" --draft --target "$GITHUB_SHA" --title "OpenCodeX $tag" --notes "CLI + desktop installers for $tag.")
+            if [[ "$PRERELEASE" == "true" ]]; then
+              args+=(--prerelease)
+            fi
+            gh "${args[@]}" --repo "$GITHUB_REPOSITORY"
+          fi
+          echo "tag=$tag" >> "$GITHUB_ENV"
+          echo "version=$version" >> "$GITHUB_ENV"
+
+      - name: Build CLI archives
+        working-directory: packages/opencode
+        env:
+          OPENCODE_VERSION: ${{ inputs.version }}
+          OPENCODE_CHANNEL: latest
+          OPENCODE_RELEASE: "1"
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="${OPENCODE_VERSION#v}"
+          export OPENCODE_VERSION="$version"
+          bun ./script/build.ts
+
+      - name: Upload CLI release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          version="${{ inputs.version }}"
+          version="${version#v}"
+          tag="v${version}"
+          shopt -s nullglob
+          files=(packages/opencode/dist/*.zip packages/opencode/dist/*.tar.gz)
+          if (( ${#files[@]} == 0 )); then
+            echo "No CLI archives found under packages/opencode/dist" >&2
+            ls -la packages/opencode/dist || true
+            exit 1
+          fi
+          gh release upload "$tag" "${files[@]}" --clobber --repo "$GITHUB_REPOSITORY"
+          {
+            echo "## CLI"
+            echo ""
+            for f in "${files[@]}"; do
+              echo "- \`$(basename "$f")\`"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish release
+        if: inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${{ inputs.version }}"
+          version="${version#v}"
+          gh release edit "v${version}" --draft=false --latest --repo "$GITHUB_REPOSITORY"

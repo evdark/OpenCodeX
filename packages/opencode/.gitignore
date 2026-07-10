@@ -3,6 +3,7 @@ dist
 dist-*
 gen
 app.log
-script/build-*.ts
+# Keep build.ts / build-node.ts tracked; only ignore ad-hoc generated builders.
+script/build-tmp-*.ts
 temporary-*.md
 .artifacts
