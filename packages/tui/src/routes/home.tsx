@@ -14,10 +14,20 @@ import { useTuiConfig } from "../config"
 import { HomeSessionDestinationProvider } from "./home/session-destination"
 
 let once = false
-const placeholder = {
-  normal: ["Fix a TODO in the codebase", "What is the tech stack of this project?", "Fix broken tests"],
-  shell: ["ls -la", "git status", "pwd"],
-}
+const plus = process.env.OPENCODEX === "1" || process.env.OPENCODE_PLUS === "1"
+const placeholder = plus
+  ? {
+      normal: [
+        "(⌐■_■) ship a fix for the flaky test",
+        "explain this repo like I'm five",
+        "plan a refactor, then wait for my go",
+      ],
+      shell: ["git status", "bun test", "pwd"],
+    }
+  : {
+      normal: ["Fix a TODO in the codebase", "What is the tech stack of this project?", "Fix broken tests"],
+      shell: ["ls -la", "git status", "pwd"],
+    }
 
 export function Home() {
   const pluginRuntime = usePluginRuntime()

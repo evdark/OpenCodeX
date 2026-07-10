@@ -19,6 +19,7 @@ import { Persist, persisted } from "@/utils/persist"
 import { base64Encode } from "@opencode-ai/core/util/encode"
 import { decode64 } from "@/utils/base64"
 import { ResizeHandle } from "@opencode-ai/ui/resize-handle"
+import { FloatingPanel } from "@/components/floating-panel"
 import { Button } from "@opencode-ai/ui/button"
 import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
 import { IconButton } from "@opencode-ai/ui/icon-button"
@@ -2342,11 +2343,21 @@ export default function LegacyLayout(props: ParentProps) {
               style={{
                 "--main-left": (() => {
                   const base = layout.sidebar.opened() ? side() : 64
-                  if (layout.queue.opened() && layout.queue.side() === "left") return `${base + layout.queue.width()}px`
+                  if (
+                    layout.queue.opened() &&
+                    !layout.floating.queue.detached() &&
+                    layout.queue.side() === "left"
+                  ) {
+                    return `${base + layout.queue.width()}px`
+                  }
                   return layout.sidebar.opened() ? `${side()}px` : "4rem"
                 })(),
                 "--main-right":
-                  layout.queue.opened() && layout.queue.side() === "right" ? `${layout.queue.width()}px` : "0px",
+                  layout.queue.opened() &&
+                  !layout.floating.queue.detached() &&
+                  layout.queue.side() === "right"
+                    ? `${layout.queue.width()}px`
+                    : "0px",
               }}
             >
               <main
@@ -2358,7 +2369,19 @@ export default function LegacyLayout(props: ParentProps) {
                   {props.children}
                 </Show>
               </main>
-              <Show when={layout.queue.opened()}>
+              <Show when={layout.queue.opened() && layout.floating.queue.detached()}>
+                <FloatingPanel
+                  title={language.t("session.followupDock.queued")}
+                  detached
+                  rect={layout.floating.queue.rect()}
+                  onDetach={() => layout.floating.queue.detach()}
+                  onDock={() => layout.floating.queue.dock()}
+                  onRectChange={(rect) => layout.floating.queue.setRect(rect)}
+                >
+                  <div class="h-full overflow-y-auto p-3">{layout.queue.content()}</div>
+                </FloatingPanel>
+              </Show>
+              <Show when={layout.queue.opened() && !layout.floating.queue.detached()}>
                 <aside
                   classList={{
                     "hidden xl:flex absolute inset-y-0 z-30 flex-col bg-background-base": true,
@@ -2374,19 +2397,28 @@ export default function LegacyLayout(props: ParentProps) {
                         }
                   }
                 >
-                  <div class="h-10 shrink-0 border-b border-border-weaker-base flex items-center justify-between gap-2 px-4">
+                  <div class="h-10 shrink-0 border-b border-border-weaker-base flex items-center justify-between gap-2 px-3">
                     <span class="text-sm font-medium text-text-base">{language.t("session.followupDock.queued")}</span>
-                    <button
-                      type="button"
-                      class="text-11-regular text-text-weak hover:text-text-strong"
-                      onClick={() => layout.queue.setSide(layout.queue.side() === "right" ? "left" : "right")}
-                    >
-                      {layout.queue.side() === "right"
-                        ? language.t("settings.layout.queueSide.left")
-                        : language.t("settings.layout.queueSide.right")}
-                    </button>
+                    <div class="flex items-center gap-1">
+                      <button
+                        type="button"
+                        class="text-11-regular text-text-weak hover:text-text-strong"
+                        onClick={() => layout.queue.setSide(layout.queue.side() === "right" ? "left" : "right")}
+                      >
+                        {layout.queue.side() === "right"
+                          ? language.t("settings.layout.queueSide.left")
+                          : language.t("settings.layout.queueSide.right")}
+                      </button>
+                      <button
+                        type="button"
+                        class="text-11-regular text-text-weak hover:text-text-strong"
+                        onClick={() => layout.floating.queue.detach()}
+                      >
+                        {language.t("settings.layout.detach")}
+                      </button>
+                    </div>
                   </div>
-                  <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4">
+                  <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-3">
                     {layout.queue.content()}
                   </div>
                   <div

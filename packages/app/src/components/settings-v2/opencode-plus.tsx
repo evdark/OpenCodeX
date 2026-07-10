@@ -27,8 +27,6 @@ import {
   parseOpenCodePlusTokenThreshold,
 } from "../opencode-plus-settings-model"
 import { exportAppSettingsBundle, importAppSettingsBundle } from "@/context/opencode-plus-runtime"
-import { PromptLibraryPanel } from "../prompt-library-panel"
-import { ProjectMemoryPanel } from "../project-memory-panel"
 import { SettingsListV2 } from "./parts/list"
 import { SettingsRowV2 } from "./parts/row"
 import "./settings-v2.css"
@@ -1034,8 +1032,6 @@ export const SettingsOpenCodePlusV2: Component = () => {
         fallback={<div class="settings-v2-opencode-plus-empty">{language.t("settings.opencodePlus.search.empty")}</div>}
       >
         <div class="settings-v2-opencode-plus-categories flex flex-col gap-4">
-          <PromptLibraryPanel />
-          <ProjectMemoryPanel />
           <For each={visibleCategories()}>
             {(category) => (
               <section class="settings-v2-opencode-plus-category">

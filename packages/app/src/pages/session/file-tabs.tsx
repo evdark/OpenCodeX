@@ -8,6 +8,7 @@ import { cloneSelectedLineRange, previewSelectedLines } from "@opencode-ai/sessi
 import { createLineCommentController } from "@opencode-ai/session-ui/line-comment-annotations"
 import { sampledChecksum } from "@opencode-ai/core/util/encode"
 import { DropdownMenu } from "@opencode-ai/ui/dropdown-menu"
+import { Icon } from "@opencode-ai/ui/icon"
 import { IconButton } from "@opencode-ai/ui/icon-button"
 import { Tabs } from "@opencode-ai/ui/tabs"
 import { ScrollView } from "@opencode-ai/ui/scroll-view"
@@ -480,35 +481,37 @@ export function FileTabContent(props: { tab: string }) {
   return (
     <Tabs.Content value={props.tab} class="mt-3 relative h-full">
       <Show when={state()?.loaded && isText()}>
-        <div class="absolute top-0 right-3 z-10 flex items-center gap-2">
+        <div class="absolute top-2 right-3 z-20 flex items-center gap-1.5 rounded-lg border border-border-weak-base bg-background-base/95 px-1.5 py-1 shadow-sm backdrop-blur-sm">
           <Show
             when={editing()}
             fallback={
-              <IconButton
-                icon="edit"
-                variant="ghost"
-                size="small"
-                aria-label={language.t("file.edit")}
+              <button
+                type="button"
+                class="flex items-center gap-1.5 rounded-md px-2 py-1 text-12-medium text-text-strong hover:bg-surface-raised-base-hover"
                 onClick={startEdit}
-              />
+              >
+                <Icon name="edit" size="small" />
+                {language.t("file.edit")}
+              </button>
             }
           >
-            <IconButton
-              icon="check"
-              variant="ghost"
-              size="small"
+            <button
+              type="button"
+              class="flex items-center gap-1.5 rounded-md px-2 py-1 text-12-medium text-text-strong hover:bg-surface-raised-base-hover disabled:opacity-50"
               disabled={saving()}
-              aria-label={language.t("file.edit.save")}
               onClick={() => void saveEdit()}
-            />
-            <IconButton
-              icon="close"
-              variant="ghost"
-              size="small"
+            >
+              <Icon name="check" size="small" />
+              {language.t("file.edit.save")}
+            </button>
+            <button
+              type="button"
+              class="flex items-center gap-1.5 rounded-md px-2 py-1 text-12-medium text-text-weak hover:bg-surface-raised-base-hover disabled:opacity-50"
               disabled={saving()}
-              aria-label={language.t("file.edit.cancel")}
               onClick={cancelEdit}
-            />
+            >
+              {language.t("file.edit.cancel")}
+            </button>
           </Show>
         </div>
       </Show>

@@ -31,6 +31,9 @@ const DEFAULT_SESSION_WIDTH = 600
 const DEFAULT_TERMINAL_HEIGHT = 280
 const DEFAULT_BROWSER_HEIGHT = 360
 const DEFAULT_REVIEW_PANEL_OPENED = false
+const DEFAULT_FLOAT_RECT = { x: 96, y: 96, width: 440, height: 340 }
+
+export type FloatingRect = { x: number; y: number; width: number; height: number }
 export type AvatarColorKey = (typeof AVATAR_COLOR_KEYS)[number]
 
 export function getAvatarColors(key?: string) {
@@ -291,9 +294,9 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
           panelOpened: DEFAULT_REVIEW_PANEL_OPENED,
         },
         fileTree: {
-          opened: false,
+          opened: true,
           width: DEFAULT_FILE_TREE_WIDTH,
-          tab: "changes" as "changes" | "all",
+          tab: "all" as "changes" | "all",
         },
         session: {
           width: DEFAULT_SESSION_WIDTH,
@@ -308,6 +311,11 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         },
         sidePanel: {
           side: "right" as "left" | "right",
+        },
+        floating: {
+          terminal: { detached: false, rect: { ...DEFAULT_FLOAT_RECT } },
+          queue: { detached: false, rect: { ...DEFAULT_FLOAT_RECT, x: 160, y: 140 } },
+          fileTree: { detached: false, rect: { ...DEFAULT_FLOAT_RECT, x: 120, y: 100, width: 320 } },
         },
         sessionTabs: {} as Record<string, SessionTabs>,
         sessionView: {} as Record<string, SessionView>,
@@ -619,13 +627,19 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
           setStore("browser", "opened", false)
           setStore("browser", "height", DEFAULT_BROWSER_HEIGHT)
           setStore("review", "panelOpened", false)
-          setStore("fileTree", "opened", false)
+          setStore("fileTree", "opened", true)
           setStore("fileTree", "width", DEFAULT_FILE_TREE_WIDTH)
+          setStore("fileTree", "tab", "all")
           setStore("session", "width", DEFAULT_SESSION_WIDTH)
           setStore("queue", "opened", false)
           setStore("queue", "width", DEFAULT_SIDEBAR_WIDTH)
           setStore("queue", "side", "right")
           setStore("sidePanel", "side", "right")
+          setStore("floating", {
+            terminal: { detached: false, rect: { ...DEFAULT_FLOAT_RECT } },
+            queue: { detached: false, rect: { ...DEFAULT_FLOAT_RECT, x: 160, y: 140 } },
+            fileTree: { detached: false, rect: { ...DEFAULT_FLOAT_RECT, x: 120, y: 100, width: 320 } },
+          })
         })
       },
       home: {
@@ -840,6 +854,51 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
             return
           }
           setStore("sidePanel", "side", side)
+        },
+      },
+      floating: {
+        terminal: {
+          detached: createMemo(() => store.floating?.terminal?.detached ?? false),
+          rect: createMemo(() => store.floating?.terminal?.rect ?? { ...DEFAULT_FLOAT_RECT }),
+          detach() {
+            setStore("floating", "terminal", "detached", true)
+          },
+          dock() {
+            setStore("floating", "terminal", "detached", false)
+          },
+          setRect(rect: FloatingRect) {
+            setStore("floating", "terminal", "rect", rect)
+          },
+        },
+        queue: {
+          detached: createMemo(() => store.floating?.queue?.detached ?? false),
+          rect: createMemo(() => store.floating?.queue?.rect ?? { ...DEFAULT_FLOAT_RECT, x: 160, y: 140 }),
+          detach() {
+            setStore("floating", "queue", "detached", true)
+            setStore("queue", "opened", true)
+          },
+          dock() {
+            setStore("floating", "queue", "detached", false)
+          },
+          setRect(rect: FloatingRect) {
+            setStore("floating", "queue", "rect", rect)
+          },
+        },
+        fileTree: {
+          detached: createMemo(() => store.floating?.fileTree?.detached ?? false),
+          rect: createMemo(
+            () => store.floating?.fileTree?.rect ?? { ...DEFAULT_FLOAT_RECT, x: 120, y: 100, width: 320 },
+          ),
+          detach() {
+            setStore("floating", "fileTree", "detached", true)
+            setStore("fileTree", "opened", true)
+          },
+          dock() {
+            setStore("floating", "fileTree", "detached", false)
+          },
+          setRect(rect: FloatingRect) {
+            setStore("floating", "fileTree", "rect", rect)
+          },
         },
       },
       pendingMessage: {

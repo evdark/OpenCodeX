@@ -25,10 +25,13 @@ function loadPlusSettingsSync() {
     const os = require("node:os") as typeof import("node:os")
     const home = process.env.OPENCODE_TEST_HOME ?? os.homedir()
     const dataHome = process.env.XDG_DATA_HOME ?? path.join(home, ".local", "share")
-    const next = path.join(dataHome, "opencode", "opencodex", "cli-settings.json")
-    const legacy = path.join(dataHome, "opencode", "opencode-plus", "cli-settings.json")
-    const file = existsSync(next) ? next : legacy
-    if (!existsSync(file)) return {}
+    const candidates = [
+      path.join(dataHome, "opencodex", "cli-settings.json"),
+      path.join(dataHome, "opencode", "opencodex", "cli-settings.json"),
+      path.join(dataHome, "opencode", "opencode-plus", "cli-settings.json"),
+    ]
+    const file = candidates.find((item) => existsSync(item))
+    if (!file) return {}
     const parsed = JSON.parse(readFileSync(file, "utf8")) as { features?: Record<string, boolean> }
     return parsed.features ?? {}
   } catch {

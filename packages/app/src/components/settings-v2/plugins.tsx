@@ -7,9 +7,18 @@ import { configPluginIds } from "@/utils/config-plugin"
 import { DialogConfigEditor } from "../dialog-config-editor"
 import { SettingsListV2 } from "./parts/list"
 import { SettingsRowV2 } from "./parts/row"
+import { SettingsServerScope } from "../settings-server-picker"
 import "./settings-v2.css"
 
 export const SettingsPluginsV2: Component = () => {
+  return (
+    <SettingsServerScope>
+      <SettingsPluginsContent />
+    </SettingsServerScope>
+  )
+}
+
+const SettingsPluginsContent: Component = () => {
   const language = useLanguage()
   const dialog = useDialog()
   const serverSync = useServerSync()

@@ -337,24 +337,6 @@ export const SettingsGeneralV2: Component<{
           </div>
         </SettingsRowV2>
 
-        <SettingsRowV2
-          title={language.t("settings.general.row.newLayoutDesigns.title")}
-          description={language.t("settings.general.row.newLayoutDesigns.description")}
-        >
-          <div data-action="settings-new-layout-designs">
-            <SwitchV2
-              checked={settings.general.newLayoutDesigns()}
-              onChange={(checked) => {
-                settings.general.setNewLayoutDesigns(checked)
-                if (checked) return
-                void import("@/components/dialog-settings").then((module) => {
-                  void dialog.show(() => <module.DialogSettings />)
-                })
-              }}
-            />
-          </div>
-        </SettingsRowV2>
-
         <Show when={mobile() && import.meta.env.VITE_OPENCODE_CHANNEL !== "prod"}>
           <SettingsRowV2
             title={language.t("settings.general.row.mobileTitlebarBottom.title")}
@@ -510,6 +492,24 @@ export const SettingsGeneralV2: Component<{
       <h3 class="settings-v2-section-title">{language.t("settings.general.section.appearance")}</h3>
 
       <SettingsListV2>
+        <SettingsRowV2
+          title={language.t("settings.general.row.newLayoutDesigns.title")}
+          description={language.t("settings.general.row.newLayoutDesigns.description")}
+        >
+          <div data-action="settings-new-layout-designs">
+            <SwitchV2
+              checked={settings.general.newLayoutDesigns()}
+              onChange={(checked) => {
+                settings.general.setNewLayoutDesigns(checked)
+                if (checked) return
+                void import("@/components/dialog-settings").then((module) => {
+                  void dialog.show(() => <module.DialogSettings />)
+                })
+              }}
+            />
+          </div>
+        </SettingsRowV2>
+
         <SettingsRowV2
           title={language.t("settings.general.row.colorScheme.title")}
           description={language.t("settings.general.row.colorScheme.description")}

@@ -3,11 +3,14 @@ import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
 import { Switch } from "@opencode-ai/ui/v2/switch-v2"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { useLanguage } from "@/context/language"
-import { useSync } from "@/context/sync"
-import { useMcpToggle } from "@/context/mcp"
+import { useServerSync } from "@/context/server-sync"
+import { useLayout } from "@/context/layout"
+import { useMutation } from "@tanstack/solid-query"
+import { showToast } from "@/utils/toast"
 import { DialogConfigEditor } from "../dialog-config-editor"
 import { SettingsListV2 } from "./parts/list"
 import { SettingsRowV2 } from "./parts/row"
+import { SettingsServerScope } from "../settings-server-picker"
 import "./settings-v2.css"
 
 const statusLabels = {
@@ -18,17 +21,54 @@ const statusLabels = {
   disabled: "mcp.status.disabled",
 } as const
 
+/** Settings surface — uses server-sync + workspace MCP, not session SDK context. */
 export const SettingsMcpV2: Component = () => {
+  return (
+    <SettingsServerScope>
+      <SettingsMcpContent />
+    </SettingsServerScope>
+  )
+}
+
+const SettingsMcpContent: Component = () => {
   const language = useLanguage()
   const dialog = useDialog()
-  const sync = useSync()
-  const toggle = useMcpToggle()
+  const serverSync = useServerSync()
+  const layout = useLayout()
+
+  const directory = createMemo(() => {
+    const selection = layout.home.selection()
+    if (selection.directory) return selection.directory
+    const projects = layout.projects.list()
+    return projects[0]?.worktree
+  })
+
+  const mcpMap = createMemo(() => {
+    const dir = directory()
+    if (!dir) return {} as Record<string, { status: string; error?: string }>
+    const child = serverSync().child(dir, { bootstrap: true, mcp: true })[0]
+    return (child.mcp ?? {}) as Record<string, { status: string; error?: string }>
+  })
 
   const items = createMemo(() =>
-    Object.entries(sync().data.mcp ?? {})
+    Object.entries(mcpMap())
       .map(([name, status]) => ({ name, status: status.status }))
       .sort((a, b) => a.name.localeCompare(b.name)),
   )
+
+  const toggle = useMutation(() => ({
+    mutationFn: async (name: string) => {
+      const dir = directory()
+      if (!dir) throw new Error(language.t("dialog.mcp.empty"))
+      await serverSync().mcp.toggle(dir, name)
+    },
+    onError: (error) =>
+      showToast({
+        variant: "error",
+        title: language.t("common.requestFailed"),
+        description: error instanceof Error ? error.message : String(error),
+      }),
+  }))
 
   const openConfig = () => {
     void dialog.show(() => (
@@ -55,6 +95,16 @@ export const SettingsMcpV2: Component = () => {
                 {language.t("configEditor.open")}
               </ButtonV2>
             </SettingsRowV2>
+            <Show when={directory()}>
+              {(dir) => (
+                <SettingsRowV2 title={language.t("settings.mcp.workspace")} description={dir()}>
+                  <span class="text-11-regular text-text-weaker font-mono truncate max-w-[220px]">{dir()}</span>
+                </SettingsRowV2>
+              )}
+            </Show>
+            <Show when={!directory()}>
+              <div class="settings-v2-provider-empty py-3">{language.t("settings.mcp.noWorkspace")}</div>
+            </Show>
           </SettingsListV2>
         </div>
 
@@ -67,15 +117,15 @@ export const SettingsMcpV2: Component = () => {
             >
               <For each={items()}>
                 {(item) => {
-                  const mcpStatus = () => sync().data.mcp[item.name]
-                  const status = () => mcpStatus()?.status
+                  const entry = () => mcpMap()[item.name]
+                  const status = () => entry()?.status
                   const statusLabel = () => {
                     const key = status() ? statusLabels[status() as keyof typeof statusLabels] : undefined
                     if (!key) return
                     return language.t(key)
                   }
                   const error = () => {
-                    const s = mcpStatus()
+                    const s = entry()
                     if (s?.status === "failed" || s?.status === "needs_client_registration") return s.error
                   }
                   const enabled = () => status() === "connected"
@@ -86,7 +136,7 @@ export const SettingsMcpV2: Component = () => {
                     >
                       <Switch
                         checked={enabled()}
-                        disabled={toggle.isPending && toggle.variables === item.name}
+                        disabled={!directory() || (toggle.isPending && toggle.variables === item.name)}
                         onChange={() => {
                           if (toggle.isPending) return
                           toggle.mutate(item.name)

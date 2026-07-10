@@ -451,6 +451,8 @@ export const dict = {
   "settings.mcp.servers": "Серверы",
   "settings.mcp.editConfig": "Конфиг MCP",
   "settings.mcp.editConfig.description": "Откройте секцию mcp конфига без внешней программы.",
+  "settings.mcp.workspace": "Проект",
+  "settings.mcp.noWorkspace": "Сначала откройте проект, чтобы видеть и переключать MCP-серверы для workspace.",
 
   "file.edit": "Редактировать файл",
   "file.edit.save": "Сохранить",
@@ -466,6 +468,8 @@ export const dict = {
   "settings.layout.sidePanelSide.description": "Разместить файлы и review слева или справа от чата",
   "settings.layout.sidePanelSide.right": "Справа",
   "settings.layout.sidePanelSide.left": "Слева",
+  "settings.layout.detach": "Открепить",
+  "settings.layout.dock": "Закрепить",
 
   "onboarding.data.title": "Настройка данных OpenCodeX",
   "onboarding.data.description": "Своя папка конфига OpenCodeX или импорт провайдеров, плагинов и настроек из OpenCode.",
@@ -1241,6 +1245,7 @@ export const dict = {
     "Ставьте промпты в очередь, пока модель занята. «Запустить сейчас» отправит выбранный промпт после безопасной границы текущего ответа.",
   "session.followupDock.queued": "В очереди",
   "session.followupDock.history": "История очереди",
+  "session.followupDock.dragHint": "Перетащите, чтобы изменить порядок",
   "session.followupDock.ready.ask": "Запустить следующий промпт?",
   "session.followupDock.ready.failed": "Повторить промпт из очереди?",
   "session.followupDock.ready.manual": "Следующий промпт готов",

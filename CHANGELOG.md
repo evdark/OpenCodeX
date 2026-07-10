@@ -2,6 +2,26 @@
 
 OpenCodeX uses semantic versioning once release tags are cut.
 
+## 1.17.18
+
+### Fixed
+
+- **MCP settings crash**: no longer requires session SDK context; uses server workspace MCP status.
+- **Language switch**: settings dialog remounts so labels update immediately without reopen.
+- **Queue UI**: compact dock, drag-to-reorder (no up/down buttons), history title not forced caps.
+- **Plan vs queue stacking**: todos/plan render under the prompt, not on top of the queue.
+
+### Added
+
+- **Detachable queue panel**: Photoshop-style float (drag / resize / dock) for the prompt queue.
+- **File edit affordance**: clear Edit/Save toolbar on project file tabs; file tree opens on All by default.
+- **CLI OpenCodeX vibe**: branded wordmark + kaomoji tagline when launched as `ocx`.
+
+### Changed
+
+- **New layout & design** moved to Appearance settings.
+- Removed Project Memory Engine and Prompt Library panels from OpenCodeX settings.
+
 ## 1.17.17
 
 ### Added

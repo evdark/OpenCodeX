@@ -15,11 +15,14 @@ export function SettingsServerScope(props: ParentProps) {
   const global = useGlobal()
   const settings = useSettings()
 
+  // Always wrap with server data providers when a server is selected so
+  // Plugins/MCP/Providers settings work without session SDK context.
   return (
-    <Show when={settings.general.newLayoutDesigns()} fallback={props.children}>
-      <Show when={global.settings.server.selected()}>
-        {(server) => <SettingsServerDataProviders server={server()}>{props.children}</SettingsServerDataProviders>}
-      </Show>
+    <Show
+      when={global.settings.server.selected() ?? (settings.general.newLayoutDesigns() ? undefined : global.servers.list()[0])}
+      fallback={props.children}
+    >
+      {(server) => <SettingsServerDataProviders server={server()}>{props.children}</SettingsServerDataProviders>}
     </Show>
   )
 }

@@ -83,7 +83,7 @@ export function SessionComposerRegion(props: {
         }}
       >
         <Show when={controller.followup() && !layout.queue.opened()}>
-          <div class="pb-2">{followupDock(false)}</div>
+          <div class="pb-1.5">{followupDock(false)}</div>
         </Show>
         <Show when={controller.state.questionRequest()} keyed>
           {(request) => (
@@ -109,28 +109,7 @@ export function SessionComposerRegion(props: {
         </Show>
 
         <Show when={controller.showComposer()}>
-          <Show when={controller.dock()}>
-            <div
-              classList={{
-                "overflow-hidden": true,
-                "pointer-events-none": controller.dockProgress() < 0.98,
-              }}
-              style={{
-                "max-height": `${controller.dockHeight() * controller.dockProgress()}px`,
-              }}
-            >
-              <div ref={controller.setDockBodyRef}>
-                <SessionTodoDock
-                  todos={controller.state.todos()}
-                  collapsed={controller.todo.collapsed()}
-                  onToggle={controller.todo.onToggle}
-                  collapseLabel={language.t("session.todo.collapse")}
-                  expandLabel={language.t("session.todo.expand")}
-                  dockProgress={controller.dockProgress()}
-                />
-              </div>
-            </div>
-          </Show>
+          {/* Plan/todos sit below the prompt so they no longer stack on the queue */}
           <Show
             when={controller.promptReady()}
             fallback={
@@ -147,10 +126,7 @@ export function SessionComposerRegion(props: {
                     </div>
                   )}
                 </Show>
-                <div
-                  class="w-full min-h-32 md:min-h-40 rounded-md border border-border-weak-base bg-background-base/50 px-4 py-3 text-text-weak whitespace-pre-wrap pointer-events-none"
-                  style={{ "margin-top": `${-36 * controller.dockProgress()}px` }}
-                >
+                <div class="w-full min-h-32 md:min-h-40 rounded-md border border-border-weak-base bg-background-base/50 px-4 py-3 text-text-weak whitespace-pre-wrap pointer-events-none">
                   {controller.handoffPrompt() || language.t("prompt.loading")}
                 </div>
               </>
@@ -158,11 +134,7 @@ export function SessionComposerRegion(props: {
           >
             <Show when={rolled()} keyed>
               {(revert) => (
-                <div
-                  style={{
-                    "margin-top": `${-36 * controller.dockProgress()}px`,
-                  }}
-                >
+                <div>
                   <SessionRevertDock
                     items={revert.items}
                     restoring={revert.restoring}
@@ -172,14 +144,7 @@ export function SessionComposerRegion(props: {
                 </div>
               )}
             </Show>
-            <div
-              classList={{
-                "relative z-[70]": true,
-              }}
-              style={{
-                "margin-top": `${-controller.lift()}px`,
-              }}
-            >
+            <div classList={{ "relative z-[70]": true }}>
               <Show
                 when={controller.child()}
                 fallback={<Show when={!controller.state.blocked()}>{props.promptInput}</Show>}
@@ -201,6 +166,18 @@ export function SessionComposerRegion(props: {
                 </div>
               </Show>
             </div>
+            <Show when={controller.dock()}>
+              <div class="pt-2" ref={controller.setDockBodyRef}>
+                <SessionTodoDock
+                  todos={controller.state.todos()}
+                  collapsed={controller.todo.collapsed()}
+                  onToggle={controller.todo.onToggle}
+                  collapseLabel={language.t("session.todo.collapse")}
+                  expandLabel={language.t("session.todo.expand")}
+                  dockProgress={1}
+                />
+              </div>
+            </Show>
           </Show>
         </Show>
       </div>

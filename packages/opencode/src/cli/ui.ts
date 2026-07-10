@@ -2,12 +2,22 @@ import { EOL } from "os"
 import { Schema } from "effect"
 import { logo as glyphs } from "./logo"
 
-const wordmark = [
+const wordmarkDefault = [
   `⠀                                ▄     `,
   `█▀▀█ █▀▀█ █▀▀█ █▀▀▄ █▀▀▀ █▀▀█ █▀▀█ █▀▀█`,
   `█  █ █  █ █▀▀▀ █  █ █    █  █ █  █ █▀▀▀`,
   `▀▀▀▀ █▀▀▀ ▀▀▀▀ ▀  ▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀`,
 ]
+
+const wordmarkPlus = [
+  `⠀                                ▄     `,
+  `█▀▀█ █▀▀█ █▀▀█ █▀▀▄ █▀▀▀ █▀▀█ █▀▀█ █  █`,
+  `█  █ █  █ █▀▀▀ █  █ █    █  █ █  █ ▀█▀ `,
+  `▀▀▀▀ █▀▀▀ ▀▀▀▀ ▀  ▀ ▀▀▀▀ ▀▀▀▀ ▀▀▀▀  ▀  `,
+]
+
+const wordmark =
+  process.env.OPENCODEX === "1" || process.env.OPENCODE_PLUS === "1" ? wordmarkPlus : wordmarkDefault
 
 export class CancelledError extends Schema.TaggedErrorClass<CancelledError>()("UICancelledError", {}) {}
 
@@ -46,11 +56,17 @@ export function empty() {
 }
 
 export function logo(pad?: string) {
+  const plus = process.env.OPENCODEX === "1" || process.env.OPENCODE_PLUS === "1"
   if (!process.stdout.isTTY && !process.stderr.isTTY) {
     const result = []
     for (const row of wordmark) {
       if (pad) result.push(pad)
       result.push(row)
+      result.push(EOL)
+    }
+    if (plus) {
+      if (pad) result.push(pad)
+      result.push("  OpenCodeX  (⌐■_■)  local AI coding agent")
       result.push(EOL)
     }
     return result.join("").trimEnd()
@@ -100,6 +116,11 @@ export function logo(pad?: string) {
     result.push(draw(other, right.fg, right.shadow, right.bg))
     result.push(EOL)
   })
+  if (plus) {
+    if (pad) result.push(pad)
+    result.push(Style.TEXT_INFO_BOLD, "  OpenCodeX  ", Style.TEXT_DIM, "(⌐■_■)", Style.TEXT_NORMAL, "  local agent")
+    result.push(EOL)
+  }
   return result.join("").trimEnd()
 }
 

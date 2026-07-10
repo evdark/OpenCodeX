@@ -561,6 +561,8 @@ export const dict = {
   "settings.mcp.servers": "Servers",
   "settings.mcp.editConfig": "MCP config",
   "settings.mcp.editConfig.description": "Open the mcp section of config without an external editor.",
+  "settings.mcp.workspace": "Workspace",
+  "settings.mcp.noWorkspace": "Open a project first to list and toggle MCP servers for that workspace.",
 
   "file.edit": "Edit file",
   "file.edit.save": "Save",
@@ -576,6 +578,8 @@ export const dict = {
   "settings.layout.sidePanelSide.description": "Place the files and review panel on the left or right of the chat",
   "settings.layout.sidePanelSide.right": "Right",
   "settings.layout.sidePanelSide.left": "Left",
+  "settings.layout.detach": "Detach",
+  "settings.layout.dock": "Dock",
 
   "onboarding.data.title": "OpenCodeX data setup",
   "onboarding.data.description": "Use your own OpenCodeX config folder, or import providers, plugins, and settings from OpenCode.",
@@ -826,6 +830,7 @@ export const dict = {
   "session.followupDock.running": "Currently Running",
   "session.followupDock.queued": "Queued",
   "session.followupDock.history": "Queue history",
+  "session.followupDock.dragHint": "Drag to reorder",
   "session.followupDock.ready.ask": "Run next prompt?",
   "session.followupDock.ready.failed": "Retry queued prompt?",
   "session.followupDock.ready.manual": "Next prompt ready",

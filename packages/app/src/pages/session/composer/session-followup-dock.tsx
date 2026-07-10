@@ -129,29 +129,29 @@ export function SessionFollowupDock(props: {
       }
     >
       <div
-        class="pl-3 pr-2 py-2 flex items-center gap-2"
+        class="pl-2.5 pr-1.5 py-1.5 flex items-center gap-1.5"
         role="button"
         tabIndex={0}
         onClick={toggle}
         onKeyDown={onHeaderKeyDown}
       >
-        <div class="flex min-w-0 shrink-0 items-center gap-1.5">
-          <span class="truncate text-13-medium text-text-strong cursor-default">{label()}</span>
+        <div class="flex min-w-0 shrink-0 items-center gap-1">
+          <span class="truncate text-12-medium text-text-strong cursor-default">{label()}</span>
           <Tooltip value={language.t("session.followupDock.help")} placement="top" contentClass="max-w-72 text-pretty">
-            <span class="inline-flex size-4 shrink-0 items-center justify-center rounded-full border border-border-base text-10-medium text-text-weak">
+            <span class="inline-flex size-3.5 shrink-0 items-center justify-center rounded-full border border-border-base text-[10px] text-text-weak">
               ?
             </span>
           </Tooltip>
         </div>
         <Show when={props.paused}>
-          <span class="shrink-0 rounded-sm bg-surface-raised-base px-1.5 py-0.5 text-11-medium text-text-base">
+          <span class="shrink-0 rounded-sm bg-surface-raised-base px-1 py-0.5 text-11-regular text-text-base">
             {language.t("session.followupDock.paused")}
           </span>
         </Show>
         <Show when={store.collapsed && preview()}>
-          <span class="min-w-0 flex-1 truncate text-13-regular text-text-base cursor-default">{preview()}</span>
+          <span class="min-w-0 flex-1 truncate text-12-regular text-text-base cursor-default">{preview()}</span>
         </Show>
-        <div class="ml-auto flex shrink-0 items-center gap-1">
+        <div class="ml-auto flex shrink-0 items-center gap-0.5">
           <Show
             when={props.paused}
             fallback={
@@ -177,7 +177,7 @@ export function SessionFollowupDock(props: {
           <IconButton
             data-collapsed={store.collapsed ? "true" : "false"}
             icon="chevron-down"
-            size="normal"
+            size="small"
             variant="ghost"
             style={{ transform: `rotate(${store.collapsed ? 180 : 0}deg)` }}
             onMouseDown={(event) => {
@@ -195,71 +195,62 @@ export function SessionFollowupDock(props: {
         </div>
       </div>
 
-      <Show when={store.collapsed}>
-        <div class="h-5" aria-hidden="true" />
-      </Show>
-
       <Show when={!store.collapsed}>
         <div
           classList={{
-            "px-3 flex flex-col gap-2 overflow-y-auto no-scrollbar": true,
-            "pb-7 max-h-64": !props.flat,
-            "pb-3 max-h-none": props.flat,
+            "px-2 flex flex-col gap-1 overflow-y-auto no-scrollbar": true,
+            "pb-5 max-h-48": !props.flat,
+            "pb-2 max-h-none": props.flat,
           }}
         >
           <Show when={props.running}>
-            <section class="flex flex-col gap-1" aria-label={language.t("session.followupDock.running")}>
-              <div class="text-11-medium uppercase text-text-weak">{language.t("session.followupDock.running")}</div>
-              <div class="flex min-w-0 items-center gap-2 rounded-md bg-surface-base px-2 py-1.5">
-                <Icon name="check-small" size="small" class="shrink-0 text-icon-success-base" />
-                <span class="min-w-0 flex-1 truncate text-13-regular text-text-strong">{props.running}</span>
-              </div>
-            </section>
+            <div class="flex min-w-0 items-center gap-1.5 rounded-md bg-surface-base px-2 py-1">
+              <Icon name="check-small" size="small" class="shrink-0 text-icon-success-base" />
+              <span class="min-w-0 flex-1 truncate text-12-regular text-text-strong">{props.running}</span>
+            </div>
           </Show>
 
           <Show when={props.paused}>
-            <div class="rounded-md bg-surface-raised-base px-2 py-1.5 text-12-regular text-text-base" role="status">
+            <div class="rounded-md bg-surface-raised-base px-2 py-1 text-11-regular text-text-base" role="status">
               {pausedLabel()}
             </div>
           </Show>
 
           <Show when={ready() && first()} keyed>
             {(item) => (
-              <div class="flex min-w-0 flex-wrap items-center gap-2 rounded-md bg-surface-base px-2 py-1.5">
-                <span class="min-w-0 flex-1 text-13-medium text-text-strong">{readyLabel()}</span>
-                <Button
-                  size="small"
-                  variant="secondary"
-                  disabled={!!props.sending}
-                  onClick={() => props.onSend(item.id)}
-                >
+              <div class="flex min-w-0 flex-wrap items-center gap-1.5 rounded-md bg-surface-base px-2 py-1">
+                <span class="min-w-0 flex-1 text-12-medium text-text-strong">{readyLabel()}</span>
+                <Button size="small" variant="secondary" disabled={!!props.sending} onClick={() => props.onSend(item.id)}>
                   {language.t("session.followupDock.sendNow")}
                 </Button>
                 <Button size="small" variant="ghost" disabled={!!props.sending} onClick={() => props.onSkip(item.id)}>
                   {language.t("session.followupDock.skip")}
-                </Button>
-                <Button size="small" variant="ghost" disabled={!!props.sending} onClick={props.onCancelQueue}>
-                  {language.t("session.followupDock.cancelQueue")}
                 </Button>
               </div>
             )}
           </Show>
 
           <Show when={props.items.length}>
-            <section class="flex flex-col gap-1" aria-label={language.t("session.followupDock.queued")}>
-              <div class="text-11-medium uppercase text-text-weak">{language.t("session.followupDock.queued")}</div>
+            <section class="flex flex-col gap-0.5" aria-label={language.t("session.followupDock.queued")}>
               <For each={props.items}>
                 {(item, index) => (
                   <div
                     draggable
-                    class="flex min-w-0 flex-col gap-2 rounded-md bg-surface-base px-2 py-1.5 sm:flex-row sm:items-center"
-                    classList={{ "outline outline-1 outline-border-info-base": item.failed }}
+                    class="group flex min-w-0 cursor-grab items-center gap-1.5 rounded-md bg-surface-base px-1.5 py-1 active:cursor-grabbing"
+                    classList={{
+                      "outline outline-1 outline-border-info-base": item.failed,
+                      "opacity-60": store.dragging === item.id,
+                    }}
                     onDragStart={(event) => {
                       event.dataTransfer?.setData("text/plain", item.id)
+                      event.dataTransfer!.effectAllowed = "move"
                       setStore("dragging", item.id)
                     }}
                     onDragEnd={() => setStore("dragging", undefined)}
-                    onDragOver={(event) => event.preventDefault()}
+                    onDragOver={(event) => {
+                      event.preventDefault()
+                      if (event.dataTransfer) event.dataTransfer.dropEffect = "move"
+                    }}
                     onDrop={(event) => {
                       event.preventDefault()
                       const source = store.dragging ?? event.dataTransfer?.getData("text/plain")
@@ -268,75 +259,46 @@ export function SessionFollowupDock(props: {
                       props.onReorder(source, item.id)
                     }}
                   >
-                    <span class="hidden w-5 shrink-0 text-right text-12-medium text-text-weak sm:block">
-                      {index() + 1}.
+                    <span
+                      class="shrink-0 select-none px-0.5 text-11-regular text-text-weaker"
+                      title={language.t("session.followupDock.dragHint")}
+                      aria-hidden
+                    >
+                      ⋮⋮
                     </span>
+                    <span class="w-4 shrink-0 text-right text-11-regular text-text-weak">{index() + 1}</span>
                     <div class="min-w-0 flex-1">
-                      <div class="truncate text-13-regular text-text-strong">{item.text}</div>
-                      <div class="truncate text-11-regular text-text-weak">
-                        {language.t("session.followupDock.created", { time: item.createdAt })} -{" "}
-                        {language.t("session.followupDock.position", { position: item.position })}
-                      </div>
+                      <div class="truncate text-12-regular text-text-strong">{item.text}</div>
                     </div>
-                    <div class="flex w-full min-w-0 flex-wrap justify-end gap-1 sm:w-auto sm:shrink-0">
-                      <Button
+                    <div class="flex shrink-0 items-center gap-0.5 opacity-70 group-hover:opacity-100">
+                      <IconButton
+                        icon="enter"
                         size="small"
-                        variant="secondary"
+                        variant="ghost"
                         disabled={!!props.sending}
+                        aria-label={
+                          item.failed
+                            ? language.t("session.followupDock.retry")
+                            : language.t("session.followupDock.sendNow")
+                        }
                         onClick={() => props.onSend(item.id)}
-                      >
-                        {item.failed
-                          ? language.t("session.followupDock.retry")
-                          : language.t("session.followupDock.sendNow")}
-                      </Button>
-                      <Button
+                      />
+                      <IconButton
+                        icon="edit"
                         size="small"
                         variant="ghost"
                         disabled={!!props.sending}
+                        aria-label={language.t("session.followupDock.edit")}
                         onClick={() => props.onEdit(item.id)}
-                      >
-                        {language.t("session.followupDock.edit")}
-                      </Button>
-                      <Button
+                      />
+                      <IconButton
+                        icon="close"
                         size="small"
                         variant="ghost"
                         disabled={!!props.sending}
-                        onClick={() => props.onDuplicate(item.id)}
-                      >
-                        {language.t("session.followupDock.duplicate")}
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="ghost"
-                        disabled={!!props.sending}
-                        onClick={() => props.onSaveTemplate(item.id)}
-                      >
-                        {language.t("session.followupDock.saveTemplate")}
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="ghost"
-                        disabled={index() === 0 || !!props.sending}
-                        onClick={() => props.onMove(item.id, -1)}
-                      >
-                        {language.t("session.followupDock.moveUp")}
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="ghost"
-                        disabled={index() === props.items.length - 1 || !!props.sending}
-                        onClick={() => props.onMove(item.id, 1)}
-                      >
-                        {language.t("session.followupDock.moveDown")}
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="ghost"
-                        disabled={!!props.sending}
+                        aria-label={language.t("session.followupDock.delete")}
                         onClick={() => props.onDelete(item.id)}
-                      >
-                        {language.t("session.followupDock.delete")}
-                      </Button>
+                      />
                     </div>
                   </div>
                 )}
@@ -344,74 +306,39 @@ export function SessionFollowupDock(props: {
             </section>
           </Show>
 
-          <Show when={props.templates.length}>
-            <section class="flex flex-col gap-1" aria-label={language.t("session.followupDock.templates")}>
-              <div class="text-11-medium uppercase text-text-weak">{language.t("session.followupDock.templates")}</div>
-              <div class="flex flex-wrap gap-1.5">
-                <For each={props.templates}>
-                  {(item) => (
-                    <div class="flex min-w-0 items-center gap-1 rounded-md bg-surface-base px-1 py-1">
-                      <Button
-                        size="small"
-                        variant="ghost"
-                        disabled={!!props.sending}
-                        onClick={() => props.onAddTemplate(item.id)}
-                      >
-                        {item.text}
-                      </Button>
-                      <IconButton
-                        icon="close"
-                        size="small"
-                        variant="ghost"
-                        disabled={!!props.sending}
-                        onClick={() => props.onDeleteTemplate(item.id)}
-                        aria-label={language.t("session.followupDock.template.delete")}
-                      />
-                    </div>
-                  )}
-                </For>
-              </div>
-            </section>
-          </Show>
-
           <Show when={props.suggestions.length}>
-            <section class="flex flex-col gap-1" aria-label={language.t("session.followupDock.suggestions")}>
-              <div class="text-11-medium uppercase text-text-weak">
-                {language.t("session.followupDock.suggestions")}
-              </div>
-              <div class="flex flex-wrap gap-1.5">
-                <For each={props.suggestions}>
-                  {(item) => (
-                    <Button
-                      size="small"
-                      variant="ghost"
-                      disabled={!!props.sending}
-                      onClick={() => props.onAddSuggestion(item.id)}
-                    >
-                      {item.text}
-                    </Button>
-                  )}
-                </For>
-              </div>
-            </section>
+            <div class="flex flex-wrap gap-1 pt-0.5">
+              <For each={props.suggestions}>
+                {(item) => (
+                  <Button
+                    size="small"
+                    variant="ghost"
+                    disabled={!!props.sending}
+                    onClick={() => props.onAddSuggestion(item.id)}
+                  >
+                    {item.text}
+                  </Button>
+                )}
+              </For>
+            </div>
           </Show>
 
           <Show when={props.history.length}>
-            <section class="flex flex-col gap-1" aria-label={language.t("session.followupDock.history")}>
+            <section class="flex flex-col gap-0.5 pt-0.5" aria-label={language.t("session.followupDock.history")}>
               <button
                 type="button"
-                class="flex h-7 items-center justify-between rounded-md px-1 text-11-medium uppercase text-text-weak hover:bg-surface-raised-base-hover"
+                class="flex h-6 items-center justify-between rounded-md px-1 text-11-regular text-text-weak hover:bg-surface-raised-base-hover"
                 onClick={() => setStore("history", (value) => !value)}
               >
-                <span>{language.t("session.followupDock.history")}</span>
+                <span class="normal-case tracking-normal">{language.t("session.followupDock.history")}</span>
                 <span>{props.history.length}</span>
               </button>
               <Show when={store.history}>
                 <For each={props.history.slice(0, 6)}>
                   {(item) => (
-                    <div class="flex min-w-0 flex-wrap items-center gap-2 rounded-md bg-surface-base px-2 py-1.5">
-                      <span class="shrink-0 text-11-medium text-text-weak">{status(item.status)}</span>
-                      <span class="min-w-0 flex-1 truncate text-13-regular text-text-strong">{item.text}</span>
+                    <div class="flex min-w-0 items-center gap-1.5 rounded-md bg-surface-base px-2 py-1">
+                      <span class="shrink-0 text-11-regular text-text-weak">{status(item.status)}</span>
+                      <span class="min-w-0 flex-1 truncate text-12-regular text-text-strong">{item.text}</span>
                       <Button
                         size="small"
                         variant="ghost"
@@ -419,14 +346,6 @@ export function SessionFollowupDock(props: {
                         onClick={() => props.onRestore(item.id)}
                       >
                         {language.t("session.followupDock.restore")}
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="ghost"
-                        disabled={!!props.sending}
-                        onClick={() => props.onSaveTemplate(item.id)}
-                      >
-                        {language.t("session.followupDock.saveTemplate")}
                       </Button>
                     </div>
                   )}

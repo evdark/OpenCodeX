@@ -19,20 +19,44 @@ export const DialogSettings: Component<{
   defaultValue?: string
 }> = (props) => {
   const language = useLanguage()
+  // Remount the whole dialog tree when locale changes so every label refreshes immediately.
+  return (
+    <Show when={language.locale()} keyed>
+      {(_locale) => <DialogSettingsInner sessionID={props.sessionID} defaultValue={props.defaultValue} />}
+    </Show>
+  )
+}
+
+const DialogSettingsInner: Component<{
+  sessionID?: string
+  defaultValue?: string
+}> = (props) => {
+  const language = useLanguage()
   const platform = usePlatform()
   const dialog = useDialog()
   const [tab, setTab] = createSignal(props.defaultValue ?? "general")
   const desktop = () => platform.platform === "desktop"
-  const generalSections: Array<{ value: SettingsGeneralV2Section; icon: IconProps["name"]; label: string; desktop?: boolean }> = [
-    { value: "general", icon: "sliders", label: language.t("settings.tab.general") },
-    { value: "opencode-plus", icon: "settings-gear", label: language.t("settings.opencodePlus.section") },
-    { value: "appearance", icon: "settings-gear", label: language.t("settings.general.section.appearance") },
-    { value: "notifications", icon: "status", label: language.t("settings.general.section.notifications") },
-    { value: "sounds", icon: "status", label: language.t("settings.general.section.sounds") },
-    { value: "updates", icon: "download", label: language.t("settings.general.section.updates"), desktop: true },
-    { value: "display", icon: "layout-bottom", label: language.t("settings.general.section.display"), desktop: true },
-    { value: "advanced", icon: "sliders", label: language.t("settings.general.section.advanced") },
-  ]
+  const generalSections = () =>
+    [
+      { value: "general" as const, icon: "sliders" as const, label: language.t("settings.tab.general") },
+      { value: "opencode-plus" as const, icon: "settings-gear" as const, label: language.t("settings.opencodePlus.section") },
+      { value: "appearance" as const, icon: "settings-gear" as const, label: language.t("settings.general.section.appearance") },
+      { value: "notifications" as const, icon: "status" as const, label: language.t("settings.general.section.notifications") },
+      { value: "sounds" as const, icon: "status" as const, label: language.t("settings.general.section.sounds") },
+      {
+        value: "updates" as const,
+        icon: "download" as const,
+        label: language.t("settings.general.section.updates"),
+        desktop: true,
+      },
+      {
+        value: "display" as const,
+        icon: "layout-bottom" as const,
+        label: language.t("settings.general.section.display"),
+        desktop: true,
+      },
+      { value: "advanced" as const, icon: "sliders" as const, label: language.t("settings.general.section.advanced") },
+    ] satisfies Array<{ value: SettingsGeneralV2Section; icon: IconProps["name"]; label: string; desktop?: boolean }>
 
   const showProviders = () => {
     void dialog.show(() => <DialogSettings sessionID={props.sessionID} defaultValue="providers" />)
@@ -54,7 +78,7 @@ export const DialogSettings: Component<{
                 <div class="flex flex-col gap-1.5">
                   <TabsV2.SectionTitle>{language.t("settings.section.desktop")}</TabsV2.SectionTitle>
                   <div class="flex flex-col gap-1.5 w-full">
-                    {generalSections.map((item) => (
+                    {generalSections().map((item) => (
                       <Show when={!item.desktop || desktop()}>
                         <TabsV2.Trigger value={item.value}>
                           <Icon name={item.icon} />
