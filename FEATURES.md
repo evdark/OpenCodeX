@@ -34,7 +34,7 @@ what OpenCodeX actually ships today. if it's not here, it's not shipped.
 | Provider setup wizard | Guided connect / custom |
 | Provider profiles | Save connected set; apply disconnects extras |
 | Provider health tags | Settings badges when enabled |
-| Plugin manager | List + curated install into config |
+| Plugin manager | Opens `opencode.json` to install plugins (no terminal); lists configured plugins |
 | Improved provider errors | Tips when gate is on |
 
 ## OpenCodeX settings

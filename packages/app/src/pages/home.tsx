@@ -671,33 +671,31 @@ export function NewHome() {
             viewportRef={sessionHeaderOpacity.setViewport}
             onScroll={(event) => sessionHeaderOpacity.update(event.currentTarget.scrollTop)}
           >
-            <Show when={groups().length > 0}>
-              <div class="relative z-20 mb-2 flex min-w-0 justify-end pr-3">
-                <div class="pointer-events-auto flex min-w-0 flex-wrap justify-end gap-1 rounded-[8px] bg-v2-background-bg-base/90 p-1 backdrop-blur">
-                  <ButtonV2
-                    data-action="home-new-chat"
-                    variant="ghost-muted"
-                    size="normal"
-                    icon="edit"
-                    class="h-7 max-w-36 px-2 [font-weight:530]"
-                    onClick={openNewChat}
-                  >
-                    {language.t("home.chat.new")}
-                  </ButtonV2>
-                  <ButtonV2
-                    data-action="home-new-session"
-                    variant="ghost-muted"
-                    size="normal"
-                    icon="folder"
-                    class="h-7 max-w-44 px-2 [font-weight:530]"
-                    onClick={openNewSession}
-                    disabled={!newSessionProject()}
-                  >
-                    {language.t("home.session.code")}
-                  </ButtonV2>
-                </div>
+            <div class="relative z-20 mb-2 flex min-w-0 justify-end pr-3">
+              <div class="pointer-events-auto flex min-w-0 flex-wrap justify-end gap-1 rounded-[8px] bg-v2-background-bg-base/90 p-1 backdrop-blur">
+                <ButtonV2
+                  data-action="home-new-chat"
+                  variant="ghost-muted"
+                  size="normal"
+                  icon="edit"
+                  class="h-7 max-w-36 px-2 [font-weight:530]"
+                  onClick={openNewChat}
+                >
+                  {language.t("home.chat.new")}
+                </ButtonV2>
+                <ButtonV2
+                  data-action="home-new-session"
+                  variant="ghost-muted"
+                  size="normal"
+                  icon="folder"
+                  class="h-7 max-w-44 px-2 [font-weight:530]"
+                  onClick={openNewSession}
+                  disabled={!newSessionProject()}
+                >
+                  {language.t("home.session.code")}
+                </ButtonV2>
               </div>
-            </Show>
+            </div>
             <Show
               when={!sessionLoad.isLoading}
               fallback={
@@ -708,7 +706,12 @@ export function NewHome() {
             >
               <Show
                 when={groups().length > 0}
-                fallback={<HomeSessionsEmpty onNewSession={newSessionProject() ? openNewSession : undefined} />}
+                fallback={
+                  <HomeSessionsEmpty
+                    onNewChat={openNewChat}
+                    onNewSession={newSessionProject() ? openNewSession : undefined}
+                  />
+                }
               >
                 <div ref={sessionHeaderOpacity.setContentRef} class="flex flex-col pt-3 pr-3 pb-16">
                   <For each={groups()}>
@@ -1729,7 +1732,7 @@ function archivedHomeSessions(sessions: Session[]) {
     )
 }
 
-function HomeSessionsEmpty(props: { onNewSession?: () => void }) {
+function HomeSessionsEmpty(props: { onNewSession?: () => void; onNewChat?: () => void }) {
   const language = useLanguage()
   return (
     <div class="flex min-h-full flex-col items-center gap-4 px-6 pt-[52px] text-center">
@@ -1739,13 +1742,28 @@ function HomeSessionsEmpty(props: { onNewSession?: () => void }) {
       <p class="mb-1 text-center text-[13px] leading-5 tracking-[-0.04px] text-v2-text-text-muted [font-weight:440]">
         {language.t("home.sessions.empty.description")}
       </p>
-      <Show when={props.onNewSession}>
-        {(onNewSession) => (
-          <ButtonV2 data-action="home-new-session" variant="neutral" size="normal" icon="edit" onClick={onNewSession()}>
-            {language.t("command.session.new")}
-          </ButtonV2>
-        )}
-      </Show>
+      <div class="flex flex-wrap items-center justify-center gap-2">
+        <Show when={props.onNewChat}>
+          {(onNewChat) => (
+            <ButtonV2 data-action="home-new-chat" variant="neutral" size="normal" icon="edit" onClick={onNewChat()}>
+              {language.t("home.chat.new")}
+            </ButtonV2>
+          )}
+        </Show>
+        <Show when={props.onNewSession}>
+          {(onNewSession) => (
+            <ButtonV2
+              data-action="home-new-session"
+              variant="ghost-muted"
+              size="normal"
+              icon="folder"
+              onClick={onNewSession()}
+            >
+              {language.t("command.session.new")}
+            </ButtonV2>
+          )}
+        </Show>
+      </div>
     </div>
   )
 }

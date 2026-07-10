@@ -194,6 +194,121 @@ export function DialogDeleteFile(props: { path: string }) {
   )
 }
 
+export function DialogMoveFile(props: { path: string }) {
+  const file = useFile()
+  const language = useLanguage()
+  const dialog = useDialog()
+  const settings = useSettings()
+  const [value, setValue] = createSignal(parentPath(props.path))
+  const [busy, setBusy] = createSignal(false)
+
+  const submit = async () => {
+    if (busy()) return
+    const folder = value().trim().replace(/^\/+|\/+$/g, "").replace(/\\/g, "/")
+    if (folder.includes("..")) {
+      showToast({
+        variant: "error",
+        title: language.t("toast.file.moveFailed.title"),
+        description: language.t("file.tree.invalidName"),
+      })
+      return
+    }
+
+    const name = getFilename(props.path)
+    const next = folder ? `${folder}/${name}` : name
+    if (next === props.path) {
+      dialog.close()
+      return
+    }
+
+    setBusy(true)
+    try {
+      await file.rename(props.path, next)
+      showToast({
+        variant: "success",
+        icon: "circle-check",
+        title: language.t("file.tree.move.success"),
+        description: next,
+      })
+      dialog.close()
+    } catch (error) {
+      showToast({
+        variant: "error",
+        title: language.t("toast.file.moveFailed.title"),
+        description: errorMessage(error, language.t("error.chain.unknown")),
+      })
+      setBusy(false)
+    }
+  }
+
+  if (settings.general.newLayoutDesigns()) {
+    return (
+      <DialogV2 fit>
+        <DialogHeader hideClose>
+          <DialogTitleGroup
+            title={language.t("file.tree.move.title")}
+            description={language.t("file.tree.move.description")}
+          />
+        </DialogHeader>
+        <div class="px-4 pb-2">
+          <div class="mb-1 text-12-regular text-text-weak">{props.path}</div>
+          <input
+            autofocus
+            value={value()}
+            placeholder={language.t("file.tree.move.placeholder")}
+            onInput={(e) => setValue(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault()
+                void submit()
+              }
+            }}
+            class="w-full rounded-md border border-border-weak-base bg-background-base px-3 py-2 text-14-regular text-text-strong outline-none focus:border-border-strong-base"
+          />
+        </div>
+        <DialogFooter>
+          <ButtonV2 variant="ghost" onClick={() => dialog.close()} disabled={busy()}>
+            {language.t("common.cancel")}
+          </ButtonV2>
+          <ButtonV2 variant="contrast" onClick={() => void submit()} disabled={busy()}>
+            {language.t("file.tree.move")}
+          </ButtonV2>
+        </DialogFooter>
+      </DialogV2>
+    )
+  }
+
+  return (
+    <Dialog title={language.t("file.tree.move.title")} fit>
+      <div class="flex flex-col gap-4 pl-6 pr-2.5 pb-3">
+        <div class="text-12-regular text-text-weak">{language.t("file.tree.move.description")}</div>
+        <div class="text-12-regular text-text-weaker font-mono">{props.path}</div>
+        <input
+          autofocus
+          value={value()}
+          placeholder={language.t("file.tree.move.placeholder")}
+          onInput={(e) => setValue(e.currentTarget.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault()
+              void submit()
+            }
+          }}
+          class="w-full rounded-md border border-border-weak-base bg-background-base px-3 py-2 text-14-regular text-text-strong outline-none focus:border-border-strong-base"
+        />
+        <div class="flex justify-end gap-2">
+          <Button variant="ghost" size="large" onClick={() => dialog.close()} disabled={busy()}>
+            {language.t("common.cancel")}
+          </Button>
+          <Button variant="primary" size="large" onClick={() => void submit()} disabled={busy()}>
+            {language.t("file.tree.move")}
+          </Button>
+        </div>
+      </div>
+    </Dialog>
+  )
+}
+
 export function useFileTreeActions() {
   const file = useFile()
   const language = useLanguage()
@@ -205,6 +320,41 @@ export function useFileTreeActions() {
 
   const remove = (path: string) => {
     dialog.show(() => <DialogDeleteFile path={path} />)
+  }
+
+  const move = (path: string) => {
+    dialog.show(() => <DialogMoveFile path={path} />)
+  }
+
+  const moveInto = async (from: string, directory: string) => {
+    const name = getFilename(from)
+    const destDir = directory.replace(/^\/+|\/+$/g, "")
+    const next = destDir ? `${destDir}/${name}` : name
+    if (next === from) return
+    // Prevent moving a folder into itself.
+    if (from === destDir || next.startsWith(from + "/")) {
+      showToast({
+        variant: "error",
+        title: language.t("toast.file.moveFailed.title"),
+        description: language.t("file.tree.invalidName"),
+      })
+      return
+    }
+    try {
+      await file.rename(from, next)
+      showToast({
+        variant: "success",
+        icon: "circle-check",
+        title: language.t("file.tree.move.success"),
+        description: next,
+      })
+    } catch (error) {
+      showToast({
+        variant: "error",
+        title: language.t("toast.file.moveFailed.title"),
+        description: errorMessage(error, language.t("error.chain.unknown")),
+      })
+    }
   }
 
   const copyPath = (path: string) => {
@@ -246,7 +396,7 @@ export function useFileTreeActions() {
     }
   }
 
-  return { rename, remove, copyPath, duplicate }
+  return { rename, remove, move, moveInto, copyPath, duplicate }
 }
 
 export function FileTreeContextMenu(props: ParentProps<{ path: string; variant?: "default" | "v2" }>): JSX.Element {
@@ -263,6 +413,7 @@ export function FileTreeContextMenu(props: ParentProps<{ path: string; variant?:
         <MenuV2.Context.Portal>
           <MenuV2.Context.Content>
             <MenuV2.Item onSelect={() => actions.rename(props.path)}>{language.t("common.rename")}</MenuV2.Item>
+            <MenuV2.Item onSelect={() => actions.move(props.path)}>{language.t("file.tree.move")}</MenuV2.Item>
             <MenuV2.Item onSelect={() => void actions.duplicate(props.path)}>
               {language.t("file.tree.duplicate")}
             </MenuV2.Item>
@@ -284,6 +435,9 @@ export function FileTreeContextMenu(props: ParentProps<{ path: string; variant?:
         <ContextMenu.Content>
           <ContextMenu.Item onSelect={() => actions.rename(props.path)}>
             <ContextMenu.ItemLabel>{language.t("common.rename")}</ContextMenu.ItemLabel>
+          </ContextMenu.Item>
+          <ContextMenu.Item onSelect={() => actions.move(props.path)}>
+            <ContextMenu.ItemLabel>{language.t("file.tree.move")}</ContextMenu.ItemLabel>
           </ContextMenu.Item>
           <ContextMenu.Item onSelect={() => void actions.duplicate(props.path)}>
             <ContextMenu.ItemLabel>{language.t("file.tree.duplicate")}</ContextMenu.ItemLabel>

@@ -37,7 +37,8 @@ tsconfig.tsbuildinfo
 artifacts/
 
 # Local agent workspaces / never commit these
-cli/
+# Only the repo-root /cli sandbox — do NOT ignore packages/**/cli (OpenCode CLI sources live there).
+/cli/
 .opencode/skills/
 **/.DS_Store
 

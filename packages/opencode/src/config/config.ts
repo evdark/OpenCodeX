@@ -459,10 +459,15 @@ const layer = Layer.effect(
           result.command = mergeDeep(result.command ?? {}, yield* Effect.promise(() => ConfigCommand.load(dir)))
           result.agent = mergeDeep(result.agent ?? {}, yield* Effect.promise(() => ConfigAgent.load(dir)))
           result.agent = mergeDeep(result.agent ?? {}, yield* Effect.promise(() => ConfigAgent.loadMode(dir)))
-          // Auto-discovered plugins under `.opencode/plugin(s)` are already local files, so ConfigPlugin.load
-          // returns normalized Specs and we only need to attach origin metadata here.
-          const list = yield* Effect.promise(() => ConfigPlugin.load(dir))
-          yield* mergePluginOrigins(dir, list)
+          // Auto-discover plugins only under project `.opencode/plugin(s)` (and OPENCODE_CONFIG_DIR).
+          // Do not auto-scan the global config root (`~/.config/opencode/plugin`) — those must be
+          // listed explicitly in opencode.json so leftover local scripts are not pulled in by accident.
+          if (dir !== Global.Path.config) {
+            // Auto-discovered plugins under `.opencode/plugin(s)` are already local files, so ConfigPlugin.load
+            // returns normalized Specs and we only need to attach origin metadata here.
+            const list = yield* Effect.promise(() => ConfigPlugin.load(dir))
+            yield* mergePluginOrigins(dir, list)
+          }
         }
 
         if (process.env.OPENCODE_CONFIG_CONTENT) {

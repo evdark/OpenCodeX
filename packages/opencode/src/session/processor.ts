@@ -513,15 +513,20 @@ const layer = Layer.effect(
             if (!ctx.currentText) return
             // oxlint-disable-next-line no-self-assign -- reactivity trigger
             ctx.currentText.text = ctx.currentText.text
-            ctx.currentText.text = (yield* plugin.trigger(
-              "experimental.text.complete",
-              {
-                sessionID: ctx.sessionID,
-                messageID: ctx.assistantMessage.id,
-                partID: ctx.currentText.id,
-              },
-              { text: ctx.currentText.text },
-            )).text
+            {
+              const before = ctx.currentText.text
+              const completed = yield* plugin.trigger(
+                "experimental.text.complete",
+                {
+                  sessionID: ctx.sessionID,
+                  messageID: ctx.assistantMessage.id,
+                  partID: ctx.currentText.id,
+                },
+                { text: before },
+              )
+              // Keep streamed text if a plugin returns empty and would wipe a real response.
+              ctx.currentText.text = completed.text || before
+            }
             {
               const end = Date.now()
               ctx.currentText.time = { start: ctx.currentText.time?.start ?? end, end }

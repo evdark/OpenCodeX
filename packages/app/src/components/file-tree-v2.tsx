@@ -15,7 +15,7 @@ import { Dynamic } from "solid-js/web"
 import type { FileNode } from "@opencode-ai/sdk/v2"
 import { Icon } from "@opencode-ai/ui/v2/icon"
 import { pathToFileUrl, withFileDragImage, type Kind } from "@/components/file-tree"
-import { FileTreeContextMenu } from "@/components/file-tree-actions"
+import { FileTreeContextMenu, useFileTreeActions } from "@/components/file-tree-actions"
 import { createVirtualizer, defaultRangeExtractor } from "@tanstack/solid-virtual"
 import { buildFileTreeV2Model, flattenFileTreeV2, normalizeFileTreeV2Path } from "@/components/file-tree-v2-model"
 import { virtualScrollElement } from "@/components/virtual-scroll-element"
@@ -87,8 +87,9 @@ const FileTreeNodeV2 = (
       onDragStart={(event: DragEvent) => {
         if (!local.draggable) return
         event.dataTransfer?.setData("text/plain", `file:${local.node.path}`)
+        event.dataTransfer?.setData("application/x-opencode-file", local.node.path)
         event.dataTransfer?.setData("text/uri-list", pathToFileUrl(local.node.path))
-        if (event.dataTransfer) event.dataTransfer.effectAllowed = "copy"
+        if (event.dataTransfer) event.dataTransfer.effectAllowed = "copyMove"
         withFileDragImage(event)
       }}
       {...rest}
@@ -121,6 +122,14 @@ function GuideLines(props: { level: number }) {
   )
 }
 
+function dragSourcePath(event: DragEvent) {
+  const custom = event.dataTransfer?.getData("application/x-opencode-file")
+  if (custom) return custom
+  const plain = event.dataTransfer?.getData("text/plain") ?? ""
+  if (plain.startsWith("file:")) return plain.slice("file:".length)
+  return ""
+}
+
 export default function FileTreeV2(props: {
   active?: string
   allowed?: readonly string[]
@@ -129,8 +138,21 @@ export default function FileTreeV2(props: {
   onFileClick?: (file: FileNode) => void
 }) {
   const file = useFile()
+  const actions = useFileTreeActions()
   const draggable = () => props.draggable ?? true
   const active = () => normalizeFileTreeV2Path(props.active ?? "")
+  const acceptDrop = (event: DragEvent, directory: string) => {
+    event.preventDefault()
+    if (event.dataTransfer) event.dataTransfer.dropEffect = "move"
+    void directory
+  }
+  const handleDrop = (event: DragEvent, directory: string) => {
+    event.preventDefault()
+    event.stopPropagation()
+    const from = dragSourcePath(event)
+    if (!from || from === directory) return
+    void actions.moveInto(from, directory)
+  }
   const model = createMemo(() => {
     if (props.allowed) return buildFileTreeV2Model(props.allowed)
     return buildFileTreeV2Model(file.tree.allNodes().map((n) => n.path))
@@ -247,6 +269,8 @@ export default function FileTreeV2(props: {
                           onFocus={() => setFocused(row().node.path)}
                           onBlur={() => setFocused(undefined)}
                           aria-expanded={file.tree.state(row().node.path)?.expanded ?? true}
+                          onDragOver={(event: DragEvent) => acceptDrop(event, row().node.originalPath)}
+                          onDrop={(event: DragEvent) => handleDrop(event, row().node.originalPath)}
                           onClick={() =>
                             file.tree.state(row().node.path)?.expanded === false
                               ? file.tree.expand(row().node.path, { list: false })

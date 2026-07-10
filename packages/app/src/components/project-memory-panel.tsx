@@ -3,22 +3,27 @@ import { Button } from "@opencode-ai/ui/button"
 import { showToast } from "@/utils/toast"
 import { useLanguage } from "@/context/language"
 import { useProjectMemory } from "@/context/project-memory"
-import { useSDK } from "@/context/sdk"
+import { useServerSync } from "@/context/server-sync"
 import { useSettings } from "@/context/settings"
 
 export function ProjectMemoryPanel(props: {
   sessionID?: string
+  directory?: string
   snapshotBody?: () => string
 }) {
   const language = useLanguage()
   const memory = useProjectMemory()
-  const sdk = useSDK()
+  const serverSync = useServerSync()
   const settings = useSettings()
   const [title, setTitle] = createSignal("")
   const [body, setBody] = createSignal("")
   const [query, setQuery] = createSignal("")
 
-  const directory = createMemo(() => sdk().directory)
+  // Prefer explicit prop / session directory; fall back to server path.
+  // Do not use useSDK() — settings dialog is outside SDKProvider (Power User crash).
+  const directory = createMemo(
+    () => props.directory ?? serverSync().data.path.directory ?? serverSync().data.path.worktree ?? "",
+  )
   const enabledSemantic = createMemo(
     () => settings.opencodePlus.experimental.enabled() && settings.opencodePlus.experimental.semanticMemory(),
   )
@@ -28,8 +33,9 @@ export function ProjectMemoryPanel(props: {
 
   const notes = createMemo(() => {
     const q = query().trim()
-    if (q && enabledSemantic()) return memory.search(q, directory())
-    return memory.notes().filter((note) => !note.directory || note.directory === directory())
+    const dir = directory() || undefined
+    if (q && enabledSemantic()) return memory.search(q, dir)
+    return memory.notes().filter((note) => !note.directory || !dir || note.directory === dir)
   })
 
   const save = () => {
@@ -38,7 +44,7 @@ export function ProjectMemoryPanel(props: {
       body: body(),
       tags: ["manual"],
       source: "project",
-      directory: directory(),
+      directory: directory() || undefined,
     })
     setTitle("")
     setBody("")
@@ -53,7 +59,7 @@ export function ProjectMemoryPanel(props: {
       title: title() || language.t("projectMemory.snapshotTitle"),
       body: content,
       sessionID: props.sessionID,
-      directory: directory(),
+      directory: directory() || undefined,
     })
     showToast({ variant: "success", title: language.t("projectMemory.snapshotSaved") })
   }

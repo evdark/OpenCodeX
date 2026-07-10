@@ -1,51 +1,82 @@
-import { For, createMemo, createSignal } from "solid-js"
+import { For, Show, createMemo } from "solid-js"
 import { Button } from "@opencode-ai/ui/button"
 import { showToast } from "@/utils/toast"
 import { useLanguage } from "@/context/language"
+import { usePlatform } from "@/context/platform"
 import { useServerSync } from "@/context/server-sync"
-import { CURATED_PLUGIN_BUNDLE } from "@/context/opencode-plus-runtime"
-import { configPluginIds, configPluginIncludes } from "@/utils/config-plugin"
+import { configPluginIds } from "@/utils/config-plugin"
+
+function configFileCandidates(configDir: string) {
+  const sep = configDir.includes("\\") ? "\\" : "/"
+  const base = configDir.endsWith(sep) ? configDir.slice(0, -1) : configDir
+  return [`${base}${sep}opencode.jsonc`, `${base}${sep}opencode.json`]
+}
 
 export function PluginManagerPanel() {
   const language = useLanguage()
+  const platform = usePlatform()
   const serverSync = useServerSync()
-  const [busy, setBusy] = createSignal<string>()
 
   const installed = createMemo(() => configPluginIds(serverSync().data.config.plugin))
-  const isInstalled = (npm: string) => configPluginIncludes(serverSync().data.config.plugin, npm)
+  const configDir = createMemo(() => serverSync().data.path.config)
 
-  const addPlugin = async (npm: string) => {
-    // Only curated package ids are installable from this UI (no free-form shell/path injection).
-    const allowed = CURATED_PLUGIN_BUNDLE.some((item) => item.npm === npm)
-    if (!allowed) {
-      showToast({ variant: "error", title: language.t("pluginManager.failed"), description: npm })
-      return
-    }
-    if (isInstalled(npm)) {
-      showToast({ title: language.t("pluginManager.alreadyInstalled") })
-      return
-    }
-    setBusy(npm)
-    const before = serverSync().data.config.plugin
-    const previous = Array.isArray(before) ? before.slice() : []
-    const next = [...previous, npm]
-    try {
-      serverSync().set("config", "plugin", next)
-      await serverSync().updateConfig({ plugin: next })
-      showToast({
-        variant: "success",
-        title: language.t("pluginManager.installed"),
-        description: npm,
-      })
-    } catch (error) {
-      serverSync().set("config", "plugin", previous)
+  const openConfig = async () => {
+    const dir = configDir()
+    if (!dir) {
       showToast({
         variant: "error",
         title: language.t("pluginManager.failed"),
-        description: error instanceof Error ? error.message : String(error),
+        description: language.t("pluginManager.noConfigPath"),
       })
-    } finally {
-      setBusy(undefined)
+      return
+    }
+
+    const candidates = configFileCandidates(dir)
+    // Prefer jsonc when present; fall back to json (created if neither exists via first path).
+    const primary = candidates[0]
+
+    if (platform.openPath) {
+      try {
+        // Try jsonc first, then json — openPath fails only if path is invalid on some hosts.
+        for (const path of candidates) {
+          try {
+            await platform.openPath(path)
+            showToast({
+              variant: "success",
+              title: language.t("pluginManager.opened"),
+              description: path,
+            })
+            return
+          } catch {
+            // try next candidate
+          }
+        }
+        await platform.openPath(primary)
+        showToast({
+          variant: "success",
+          title: language.t("pluginManager.opened"),
+          description: primary,
+        })
+        return
+      } catch (error) {
+        showToast({
+          variant: "error",
+          title: language.t("pluginManager.failed"),
+          description: error instanceof Error ? error.message : String(error),
+        })
+        return
+      }
+    }
+
+    // Web / no native open: open a small helper tab with the path to copy.
+    showToast({
+      title: language.t("pluginManager.pathReady"),
+      description: primary,
+    })
+    try {
+      await navigator.clipboard.writeText(primary)
+    } catch {
+      // clipboard may be unavailable
     }
   }
 
@@ -56,38 +87,33 @@ export function PluginManagerPanel() {
         <div class="text-12-regular text-text-weak">{language.t("pluginManager.description")}</div>
       </div>
 
-      <div>
-        <div class="mb-2 text-12-medium text-text-strong">{language.t("pluginManager.curated")}</div>
-        <div class="flex flex-col gap-2">
-          <For each={[...CURATED_PLUGIN_BUNDLE]}>
-            {(plugin) => (
-              <div class="flex items-center justify-between gap-2 rounded-md border border-border-weak-base p-2">
-                <div class="min-w-0">
-                  <div class="text-13-medium text-text-strong">{plugin.name}</div>
-                  <div class="text-12-regular text-text-weak">{plugin.description}</div>
-                  <div class="text-11-regular text-text-weaker">{plugin.npm}</div>
-                </div>
-                <Button
-                  size="small"
-                  variant={isInstalled(plugin.npm) ? "ghost" : "secondary"}
-                  disabled={busy() === plugin.npm || isInstalled(plugin.npm)}
-                  onClick={() => void addPlugin(plugin.npm)}
-                >
-                  {isInstalled(plugin.npm)
-                    ? language.t("pluginManager.installedLabel")
-                    : language.t("pluginManager.install")}
-                </Button>
-              </div>
-            )}
-          </For>
-        </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <Button size="small" variant="secondary" onClick={() => void openConfig()}>
+          {language.t("pluginManager.install")}
+        </Button>
+        <Show when={configDir()}>
+          {(dir) => <div class="text-11-regular text-text-weaker font-mono truncate max-w-full">{dir()}</div>}
+        </Show>
       </div>
+
+      <div class="text-12-regular text-text-weak">{language.t("pluginManager.hint")}</div>
 
       <div>
         <div class="mb-2 text-12-medium text-text-strong">{language.t("pluginManager.installedList")}</div>
-        <div class="text-12-regular text-text-weak">
-          {installed().length > 0 ? installed().join(", ") : language.t("pluginManager.noneInstalled")}
-        </div>
+        <Show
+          when={installed().length > 0}
+          fallback={<div class="text-12-regular text-text-weak">{language.t("pluginManager.noneInstalled")}</div>}
+        >
+          <ul class="flex flex-col gap-1">
+            <For each={installed()}>
+              {(plugin) => (
+                <li class="rounded-md border border-border-weak-base px-2 py-1.5 text-12-regular text-text-strong font-mono truncate">
+                  {plugin}
+                </li>
+              )}
+            </For>
+          </ul>
+        </Show>
       </div>
     </div>
   )

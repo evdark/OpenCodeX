@@ -2,6 +2,23 @@
 
 OpenCodeX uses semantic versioning once release tags are cut.
 
+## 1.17.16
+
+### Fixed
+
+- **Plugin manager**: install button opens `opencode.json` instead of curated catalog.
+- **Power User preset**: Project Memory panel no longer crashes (`SDK context` outside provider).
+- **Error page**: report link points to Telegram `@drkbemad` (not Discord).
+- **Chat button**: always available on home + titlebar (project-less ChatGPT-style chat).
+- **Global plugins**: stop auto-loading `~/.config/opencode/plugin/*` (must be listed in config).
+- **Empty AI replies**: do not let plugins wipe non-empty streamed text; skip accidental global plugins.
+- **File tree**: rename / move / delete work reliably; drag-drop into folders; error feedback.
+- **CLI**: restored `packages/opencode/src/cli` (was gitignored by `cli/`); OpenCodeX commands (`setup`, `dashboard`, `resume`, `memory`, `git`, …) work again.
+
+### Changed
+
+- `.gitignore`: only ignore root `/cli/`, not product CLI sources.
+
 ## Unreleased / 1.0.0-clean
 
 ### Added

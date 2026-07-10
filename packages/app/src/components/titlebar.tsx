@@ -522,6 +522,18 @@ export function Titlebar(props: { update?: TitlebarUpdate }) {
                   onReorder={(keys) => tabsStoreActions.reorder(keys)}
                 />
                 <Show when={!creating()}>
+                  <TooltipV2 placement="bottom" value={language.t("session.chat.title")}>
+                    <IconButtonV2
+                      type="button"
+                      variant="ghost-muted"
+                      size="large"
+                      class="shrink-0"
+                      icon={<IconV2 name="edit" />}
+                      onClick={openNewChat}
+                      aria-label={language.t("session.chat.title")}
+                      data-action="titlebar-new-chat"
+                    />
+                  </TooltipV2>
                   <TooltipV2
                     placement="bottom"
                     value={
