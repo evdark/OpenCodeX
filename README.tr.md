@@ -87,31 +87,47 @@ bu sürümde rpm yok (packager’da `rpmbuild` gerekir).
 
 ### Ajanlar
 
-OpenCode, `Tab` tuşuyla aralarında geçiş yapabileceğiniz iki yerleşik (built-in) ajan içerir.
+OpenCodeX (upstream OpenCode gibi) yerleşik ajanlar içerir — `Tab` ile geç:
 
-- **build** - Varsayılan, geliştirme çalışmaları için tam erişimli ajan
-- **plan** - Analiz ve kod keşfi için salt okunur ajan
-  - Varsayılan olarak dosya düzenlemelerini reddeder
-  - Bash komutlarını çalıştırmadan önce izin ister
-  - Tanımadığınız kod tabanlarını keşfetmek veya değişiklikleri planlamak için ideal
+- **build** — varsayılan, tam geliştirme erişimi
+- **plan** — salt okunur analiz / keşif
+  - varsayılan olarak dosya düzenlemez
+  - bash öncesi sorar
+  - bilinmeyen repolar ve planlama için iyi
 
-Ayrıca, karmaşık aramalar ve çok adımlı görevler için bir **genel** alt ajan bulunmaktadır.
-Bu dahili olarak kullanılır ve mesajlarda `@general` ile çağrılabilir.
+**general** subagent — karmaşık arama ve çok adımlı işler (`@general`).
 
-[Ajanlar](https://opencode.ai/docs/agents) hakkında daha fazla bilgi edinin.
+### Başka neler var
+
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
 ### Dokümantasyon
 
-OpenCode'u nasıl yapılandıracağınız hakkında daha fazla bilgi için [**dokümantasyonumuza göz atın**](https://opencode.ai/docs).
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | gerçekten ne çalışıyor |
+| [cli](docs/cli-premium.md) | terminal extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | config layout |
+| [security](SECURITY.md) | kendini yakmama rehberi |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
-### Katkıda Bulunma
+### Katkı
 
-OpenCode'a katkıda bulunmak istiyorsanız, lütfen bir pull request göndermeden önce [katkıda bulunma dokümanlarımızı](./CONTRIBUTING.md) okuyun.
+**OpenCodeX**’e katkı: [CONTRIBUTING.md](CONTRIBUTING.md) oku, sonra [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX) üzerinde PR/issue aç.
 
-### OpenCode Üzerine Geliştirme
+### Lisans ve atıf
 
-OpenCode ile ilgili bir proje üzerinde çalışıyorsanız ve projenizin adının bir parçası olarak "opencode" kullanıyorsanız (örneğin, "opencode-dashboard" veya "opencode-mobile"), lütfen README dosyanıza projenin OpenCode ekibi tarafından geliştirilmediğini ve bizimle hiçbir şekilde bağlantılı olmadığını belirten bir not ekleyin.
+- **License:** [MIT](LICENSE) (upstream OpenCode ile aynı aile)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX **resmi olmayan bir fork**. OpenCode Inc / Anomalyco değiliz, “resmi” app de değiliz.
 
-**Topluluğumuza katılın** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+Bozulursa → [issue](https://github.com/evdark/OpenCodeX/issues). Bozulmazsa da tamam. `ヽ(・∀・)ﾉ`

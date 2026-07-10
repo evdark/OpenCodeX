@@ -87,31 +87,47 @@ ingen rpm i dette cut (trenger `rpmbuild` på packager).
 
 ### Agents
 
-OpenCode har to innebygde agents du kan bytte mellom med `Tab`-tasten.
+OpenCodeX (som upstream OpenCode) har innebygde agents — bytt med `Tab`:
 
-- **build** - Standard, agent med full tilgang for utviklingsarbeid
-- **plan** - Skrivebeskyttet agent for analyse og kodeutforsking
-  - Nekter filendringer som standard
-  - Spør om tillatelse før bash-kommandoer
-  - Ideell for å utforske ukjente kodebaser eller planlegge endringer
+- **build** — standard, full utviklings tilgang
+- **plan** — read-only analyse / utforsking
+  - redigerer ikke filer som standard
+  - spør før bash
+  - bra for ukjente repos og planlegging
 
-Det finnes også en **general**-subagent for komplekse søk og flertrinnsoppgaver.
-Den brukes internt og kan kalles via `@general` i meldinger.
+Subagent **general** for komplekse søk og multi-step (`@general`).
 
-Les mer om [agents](https://opencode.ai/docs/agents).
+### Hva mer følger med
 
-### Dokumentasjon
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
-For mer info om hvordan du konfigurerer OpenCode, [**se dokumentasjonen**](https://opencode.ai/docs).
+### Docs
+
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | det som faktisk kjører |
+| [cli](docs/cli-premium.md) | terminal-extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | config-layout |
+| [security](SECURITY.md) | hvordan ikke brenne deg |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
 ### Bidra
 
-Hvis du vil bidra til OpenCode, les [contributing docs](./CONTRIBUTING.md) før du sender en pull request.
+Bidra til **OpenCodeX**: les [CONTRIBUTING.md](CONTRIBUTING.md) og åpne PR/issue på [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX).
 
-### Bygge på OpenCode
+### Lisens og attribusjon
 
-Hvis du jobber med et prosjekt som er relatert til OpenCode og bruker "opencode" som en del av navnet; for eksempel "opencode-dashboard" eller "opencode-mobile", legg inn en merknad i README som presiserer at det ikke er bygget av OpenCode-teamet og ikke er tilknyttet oss på noen måte.
+- **License:** [MIT](LICENSE) (samme familie som upstream OpenCode)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX er en **uoffisiell fork**. Vi er ikke OpenCode Inc / Anomalyco og ikke den «offisielle» appen.
 
-**Bli med i fellesskapet** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+Hvis det kneler → [issue](https://github.com/evdark/OpenCodeX/issues). Hvis ikke, også greit. `ヽ(・∀・)ﾉ`

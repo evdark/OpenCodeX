@@ -85,33 +85,49 @@ rpm はこのカットには無し（packager に `rpmbuild` が必要）。
 **releases:** https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0
 
 
-### Agents
+### エージェント
 
-OpenCode には組み込みの Agent が2つあり、`Tab` キーで切り替えられます。
+OpenCodeX（upstream OpenCode と同様）には組み込みエージェントがあります。`Tab` で切替:
 
-- **build** - デフォルト。開発向けのフルアクセス Agent
-- **plan** - 分析とコード探索向けの読み取り専用 Agent
-  - デフォルトでファイル編集を拒否
-  - bash コマンド実行前に確認
-  - 未知のコードベース探索や変更計画に最適
+- **build** — デフォルト、開発向けフル権限
+- **plan** — 読み取り専用の分析・探索
+  - デフォルトでファイル編集しない
+  - bash 前に確認
+  - 未知のリポジトリや計画に向く
 
-また、複雑な検索やマルチステップのタスク向けに **general** サブ Agent も含まれています。
-内部的に使用されており、メッセージで `@general` と入力して呼び出せます。
+サブエージェント **general** — 複雑な検索と多段タスク（`@general`）。
 
-[agents](https://opencode.ai/docs/agents) の詳細はこちら。
+### その他の同梱
+
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
 ### ドキュメント
 
-OpenCode の設定については [**ドキュメント**](https://opencode.ai/docs) を参照してください。
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | 実際に動くもの |
+| [cli](docs/cli-premium.md) | ターミナル extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | config レイアウト |
+| [security](SECURITY.md) | 自滅しないために |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
 ### コントリビュート
 
-OpenCode に貢献したい場合は、Pull Request を送る前に [contributing docs](./CONTRIBUTING.md) を読んでください。
+**OpenCodeX** への貢献: [CONTRIBUTING.md](CONTRIBUTING.md) を読んで [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX) に PR/issue。
 
-### OpenCode の上に構築する
+### ライセンスと帰属
 
-OpenCode に関連するプロジェクトで、名前に "opencode"（例: "opencode-dashboard" や "opencode-mobile"）を含める場合は、そのプロジェクトが OpenCode チームによって作られたものではなく、いかなる形でも関係がないことを README に明記してください。
+- **License:** [MIT](LICENSE)（upstream OpenCode と同じ系統）
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX は **非公式フォーク**。OpenCode Inc / Anomalyco でも「公式」アプリでもありません。
 
-**コミュニティに参加** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+壊れたら → [issue](https://github.com/evdark/OpenCodeX/issues)。壊れなければそれでも OK。`ヽ(・∀・)ﾉ`

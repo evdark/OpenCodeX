@@ -87,31 +87,47 @@ nema rpm u ovom cutu (treba `rpmbuild` na packageru).
 
 ### Agenti
 
-OpenCode uključuje dva ugrađena agenta između kojih možeš prebacivati tasterom `Tab`.
+OpenCodeX (kao upstream OpenCode) ima ugrađene agente — prebacivanje `Tab`:
 
-- **build** - Podrazumijevani agent sa punim pristupom za razvoj
-- **plan** - Agent samo za čitanje za analizu i istraživanje koda
-  - Podrazumijevano zabranjuje izmjene datoteka
-  - Traži dozvolu prije pokretanja bash komandi
-  - Idealan za istraživanje nepoznatih codebase-ova ili planiranje izmjena
+- **build** — podrazumijevano, puni razvojni pristup
+- **plan** — read-only analiza / istraživanje
+  - po defaultu ne edituje fajlove
+  - pita prije bash
+  - dobar za nepoznate repoe i planiranje
 
-Uključen je i **general** pod-agent za složene pretrage i višekoračne zadatke.
-Koristi se interno i može se pozvati pomoću `@general` u porukama.
+Subagent **general** za složene pretrage i multi-step (`@general`).
 
-Saznaj više o [agentima](https://opencode.ai/docs/agents).
+### Šta još dolazi
+
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
 ### Dokumentacija
 
-Za više informacija o konfiguraciji OpenCode-a, [**pogledaj dokumentaciju**](https://opencode.ai/docs).
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | šta stvarno radi |
+| [cli](docs/cli-premium.md) | terminal extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | layout configa |
+| [security](SECURITY.md) | kako se ne spalit |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
-### Doprinosi
+### Doprinos
 
-Ako želiš doprinositi OpenCode-u, pročitaj [upute za doprinošenje](./CONTRIBUTING.md) prije slanja pull requesta.
+Želiš doprinositi **OpenCodeX**: pročitaj [CONTRIBUTING.md](CONTRIBUTING.md) i otvori PR/issue na [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX).
 
-### Gradnja na OpenCode-u
+### Licenca i atribucija
 
-Ako radiš na projektu koji je povezan s OpenCode-om i koristi "opencode" kao dio naziva, npr. "opencode-dashboard" ili "opencode-mobile", dodaj napomenu u svoj README da projekat nije napravio OpenCode tim i da nije povezan s nama.
+- **License:** [MIT](LICENSE) (kao upstream OpenCode)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX je **neslužbeni fork**. Nismo OpenCode Inc / Anomalyco niti «zvanična» app.
 
-**Pridruži se našoj zajednici** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+Ako se polomi → [issue](https://github.com/evdark/OpenCodeX/issues). Ako ne — isto ok. `ヽ(・∀・)ﾉ`

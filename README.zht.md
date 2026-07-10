@@ -87,30 +87,47 @@ macOS（未簽名）：右鍵 → 打開。Gatekeeper 很有個性。`(￣ヘ￣
 
 ### Agents
 
-OpenCode 內建了兩種 Agent，您可以使用 `Tab` 鍵快速切換。
+OpenCodeX（與上游 OpenCode 類似）內建 Agent，用 `Tab` 切換：
 
-- **build** - 預設模式，具備完整權限的 Agent，適用於開發工作。
-- **plan** - 唯讀模式，適用於程式碼分析與探索。
-  - 預設禁止修改檔案。
-  - 執行 bash 指令前會詢問權限。
-  - 非常適合用來探索陌生的程式碼庫或規劃變更。
+- **build** — 預設，完整開發權限
+- **plan** — 唯讀分析與探索
+  - 預設不改檔案
+  - 執行 bash 前會詢問
+  - 適合陌生倉庫與規劃
 
-此外，OpenCode 還包含一個 **general** 子 Agent，用於處理複雜搜尋與多步驟任務。此 Agent 供系統內部使用，亦可透過在訊息中輸入 `@general` 來呼叫。
+子 Agent **general** — 複雜搜尋與多步任務（`@general`）。
 
-了解更多關於 [Agents](https://opencode.ai/docs/agents) 的資訊。
+### 還帶什麼
 
-### 線上文件
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
-關於如何設定 OpenCode 的詳細資訊，請參閱我們的 [**官方文件**](https://opencode.ai/docs)。
+### 文件
 
-### 參與貢獻
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | 真正能跑的功能 |
+| [cli](docs/cli-premium.md) | 終端 extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | 設定配置 |
+| [security](SECURITY.md) | 別把自己搞炸 |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
-如果您有興趣參與 OpenCode 的開發，請在提交 Pull Request 前先閱讀我們的 [貢獻指南 (Contributing Docs)](./CONTRIBUTING.md)。
+### 貢獻
 
-### 基於 OpenCode 進行開發
+給 **OpenCodeX** 貢獻：先讀 [CONTRIBUTING.md](CONTRIBUTING.md)，再在 [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX) 開 PR/issue。
 
-如果您正在開發與 OpenCode 相關的專案，並在名稱中使用了 "opencode"（例如 "opencode-dashboard" 或 "opencode-mobile"），請在您的 README 中加入聲明，說明該專案並非由 OpenCode 團隊開發，且與我們沒有任何隸屬關係。
+### 授權與歸屬
 
----
+- **License:** [MIT](LICENSE)（與上游 OpenCode 同系）
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
-**加入我們的社群** [飞书](https://applink.feishu.cn/client/chat/chatter/add_by_link?link_token=52ao9352-5623-4fa0-b7dd-3407c392c1af&qr_code=true) | [X.com](https://x.com/opencode)
+OpenCodeX 是**非官方 fork**。我們不是 OpenCode Inc / Anomalyco，也不是「官方」應用。
+
+壞了 → [issue](https://github.com/evdark/OpenCodeX/issues)。沒壞也行。`ヽ(・∀・)ﾉ`

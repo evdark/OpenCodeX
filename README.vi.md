@@ -85,33 +85,49 @@ không có rpm trong cut này (cần `rpmbuild` trên packager).
 **releases:** https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0
 
 
-### Agents (Đại diện)
+### Agents
 
-OpenCode bao gồm hai agent được tích hợp sẵn mà bạn có thể chuyển đổi bằng phím `Tab`.
+OpenCodeX (giống upstream OpenCode) có agent tích hợp — đổi bằng `Tab`:
 
-- **build** - Agent mặc định, có toàn quyền truy cập cho công việc lập trình
-- **plan** - Agent chỉ đọc dùng để phân tích và khám phá mã nguồn
-  - Mặc định từ chối việc chỉnh sửa tệp
-  - Hỏi quyền trước khi chạy các lệnh bash
-  - Lý tưởng để khám phá các codebase lạ hoặc lên kế hoạch thay đổi
+- **build** — mặc định, full quyền dev
+- **plan** — phân tích / khám phá chỉ đọc
+  - mặc định không sửa file
+  - hỏi trước bash
+  - hợp repo lạ và lập kế hoạch
 
-Ngoài ra còn có một subagent **general** dùng cho các tìm kiếm phức tạp và tác vụ nhiều bước.
-Agent này được sử dụng nội bộ và có thể gọi bằng cách dùng `@general` trong tin nhắn.
+Subagent **general** cho tìm kiếm phức tạp và multi-step (`@general`).
 
-Tìm hiểu thêm về [agents](https://opencode.ai/docs/agents).
+### Còn gì nữa
+
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
 ### Tài liệu
 
-Để biết thêm thông tin về cách cấu hình OpenCode, [**hãy truy cập tài liệu của chúng tôi**](https://opencode.ai/docs).
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | cái gì thực sự chạy |
+| [cli](docs/cli-premium.md) | terminal extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | layout config |
+| [security](SECURITY.md) | đừng tự thiêu |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
 ### Đóng góp
 
-Nếu bạn muốn đóng góp cho OpenCode, vui lòng đọc [tài liệu hướng dẫn đóng góp](./CONTRIBUTING.md) trước khi gửi pull request.
+Muốn contribute **OpenCodeX**: đọc [CONTRIBUTING.md](CONTRIBUTING.md) rồi mở PR/issue trên [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX).
 
-### Xây dựng trên nền tảng OpenCode
+### Giấy phép & ghi công
 
-Nếu bạn đang làm việc trên một dự án liên quan đến OpenCode và sử dụng "opencode" như một phần của tên dự án, ví dụ "opencode-dashboard" hoặc "opencode-mobile", vui lòng thêm một ghi chú vào README của bạn để làm rõ rằng dự án đó không được xây dựng bởi đội ngũ OpenCode và không liên kết với chúng tôi dưới bất kỳ hình thức nào.
+- **License:** [MIT](LICENSE) (cùng họ với upstream OpenCode)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX là **fork không chính thức**. Chúng tôi không phải OpenCode Inc / Anomalyco hay app «chính thức».
 
-**Tham gia cộng đồng của chúng tôi** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+Hỏng → [issue](https://github.com/evdark/OpenCodeX/issues). Không hỏng cũng được. `ヽ(・∀・)ﾉ`

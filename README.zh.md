@@ -87,30 +87,47 @@ macOS（未签名）：右键 → 打开。Gatekeeper 挺有性格。`(￣ヘ￣
 
 ### Agents
 
-OpenCode 内置两种 Agent，可用 `Tab` 键快速切换：
+OpenCodeX（与上游 OpenCode 类似）内置 Agent，用 `Tab` 切换：
 
-- **build** - 默认模式，具备完整权限，适合开发工作
-- **plan** - 只读模式，适合代码分析与探索
-  - 默认拒绝修改文件
-  - 运行 bash 命令前会询问
-  - 便于探索未知代码库或规划改动
+- **build** — 默认，完整开发权限
+- **plan** — 只读分析与探索
+  - 默认不改文件
+  - 执行 bash 前会询问
+  - 适合陌生仓库与规划
 
-另外还包含一个 **general** 子 Agent，用于复杂搜索和多步任务，内部使用，也可在消息中输入 `@general` 调用。
+子 Agent **general** — 复杂搜索与多步任务（`@general`）。
 
-了解更多 [Agents](https://opencode.ai/docs/agents) 相关信息。
+### 还带什么
+
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
 ### 文档
 
-更多配置说明请查看我们的 [**官方文档**](https://opencode.ai/docs)。
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | 真正能跑的功能 |
+| [cli](docs/cli-premium.md) | 终端 extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | 配置布局 |
+| [security](SECURITY.md) | 别把自己搞炸 |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
-### 参与贡献
+### 贡献
 
-如有兴趣贡献代码，请在提交 PR 前阅读 [贡献指南 (Contributing Docs)](./CONTRIBUTING.md)。
+给 **OpenCodeX** 贡献：先读 [CONTRIBUTING.md](CONTRIBUTING.md)，再在 [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX) 开 PR/issue。
 
-### 基于 OpenCode 进行开发
+### 许可与归属
 
-如果你在项目名中使用了 “opencode”（如 “opencode-dashboard” 或 “opencode-mobile”），请在 README 里注明该项目不是 OpenCode 团队官方开发，且不存在隶属关系。
+- **License:** [MIT](LICENSE)（与上游 OpenCode 同系）
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX 是**非官方 fork**。我们不是 OpenCode Inc / Anomalyco，也不是“官方”应用。
 
-**加入我们的社区** [飞书](https://applink.feishu.cn/client/chat/chatter/add_by_link?link_token=52ao9352-5623-4fa0-b7dd-3407c392c1af&qr_code=true) | [X.com](https://x.com/opencode)
+坏了 → [issue](https://github.com/evdark/OpenCodeX/issues)。没坏也行。`ヽ(・∀・)ﾉ`

@@ -85,33 +85,49 @@ rpm в этом релизе нет (нужен `rpmbuild` на packager).
 **релизы:** https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0
 
 
-### Agents
+### Агенты
 
-В OpenCode есть два встроенных агента, между которыми можно переключаться клавишей `Tab`.
+В OpenCodeX (как и в upstream OpenCode) есть встроенные агенты, переключение — `Tab`:
 
-- **build** - По умолчанию, агент с полным доступом для разработки
-- **plan** - Агент только для чтения для анализа и изучения кода
-  - По умолчанию запрещает редактирование файлов
-  - Запрашивает разрешение перед выполнением bash-команд
-  - Идеален для изучения незнакомых кодовых баз или планирования изменений
+- **build** — по умолчанию, полный доступ к разработке
+- **plan** — read-only анализ и исследование
+  - по умолчанию не правит файлы
+  - спрашивает перед bash
+  - удобен для незнакомых репозиториев и планирования
 
-Также включен сабагент **general** для сложных поисков и многошаговых задач.
-Он используется внутренне и может быть вызван в сообщениях через `@general`.
+Сабагент **general** — для сложных поисков и многошаговых задач (`@general`).
 
-Подробнее об [agents](https://opencode.ai/docs/agents).
+### Что ещё есть
+
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
 ### Документация
 
-Больше информации о том, как настроить OpenCode: [**наши docs**](https://opencode.ai/docs).
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | что реально работает |
+| [cli](docs/cli-premium.md) | терминальные extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | layout конфигов |
+| [security](SECURITY.md) | как себя не поджечь |
+| [contributing](CONTRIBUTING.md) | как слать PR |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
 ### Вклад
 
-Если вы хотите внести вклад в OpenCode, прочитайте [contributing docs](./CONTRIBUTING.md) перед тем, как отправлять pull request.
+Хочешь контрибьютить в **OpenCodeX** — прочитай [CONTRIBUTING.md](CONTRIBUTING.md) и открой PR/issue в [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX).
 
-### Разработка на базе OpenCode
+### Лицензия и атрибуция
 
-Если вы делаете проект, связанный с OpenCode, и используете "opencode" как часть имени (например, "opencode-dashboard" или "opencode-mobile"), добавьте примечание в README, чтобы уточнить, что проект не создан командой OpenCode и не аффилирован с нами.
+- **License:** [MIT](LICENSE) (как у upstream OpenCode)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX — **неофициальный форк**. Мы не OpenCode Inc / Anomalyco и не «официальное» приложение.
 
-**Присоединяйтесь к нашему сообществу** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+Если сломалось — [issue](https://github.com/evdark/OpenCodeX/issues). Если нет — тоже ок. `ヽ(・∀・)ﾉ`

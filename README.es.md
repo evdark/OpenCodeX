@@ -87,31 +87,47 @@ rpm no va en este corte (hace falta `rpmbuild` en el packager).
 
 ### Agentes
 
-OpenCode incluye dos agentes integrados que puedes alternar con la tecla `Tab`.
+OpenCodeX (como upstream OpenCode) incluye agentes integrados — cambia con `Tab`:
 
-- **build** - Por defecto, agente con acceso completo para tareas de desarrollo
-- **plan** - Agente de solo lectura para análisis y exploración de código
-  - Deniega ediciones de archivos por defecto
-  - Pide permiso antes de ejecutar comandos bash
-  - Ideal para explorar codebases desconocidas o planificar cambios
+- **build** — por defecto, acceso completo al desarrollo
+- **plan** — análisis y exploración solo lectura
+  - no edita archivos por defecto
+  - pide permiso antes de bash
+  - ideal para repos desconocidos y planificación
 
-Además, incluye un subagente **general** para búsquedas complejas y tareas de varios pasos.
-Se usa internamente y se puede invocar con `@general` en los mensajes.
+Subagente **general** para búsquedas complejas y tareas multi-paso (`@general`).
 
-Más información sobre [agentes](https://opencode.ai/docs/agents).
+### Qué más trae
+
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
 ### Documentación
 
-Para más información sobre cómo configurar OpenCode, [**ve a nuestra documentación**](https://opencode.ai/docs).
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | lo que de verdad corre |
+| [cli](docs/cli-premium.md) | extras de terminal |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | layout de config |
+| [security](SECURITY.md) | cómo no quemarte |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
 ### Contribuir
 
-Si te interesa contribuir a OpenCode, lee nuestras [docs de contribución](./CONTRIBUTING.md) antes de enviar un pull request.
+Para contribuir a **OpenCodeX**: lee [CONTRIBUTING.md](CONTRIBUTING.md) y abre PR/issue en [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX).
 
-### Proyectos basados en OpenCode
+### Licencia y atribución
 
-Si estás trabajando en un proyecto basado en OpenCode y usas "opencode" como parte del nombre, por ejemplo, "opencode-dashboard" u "opencode-mobile", agrega una nota en tu README para aclarar que no está hecho por el equipo de OpenCode y que no está afiliado con nosotros de ninguna manera.
+- **License:** [MIT](LICENSE) (como upstream OpenCode)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX es un **fork no oficial**. No somos OpenCode Inc / Anomalyco ni la app «oficial».
 
-**Únete a nuestra comunidad** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+Si se rompe → [issue](https://github.com/evdark/OpenCodeX/issues). Si no, también vale. `ヽ(・∀・)ﾉ`

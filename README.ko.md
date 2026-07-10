@@ -85,33 +85,49 @@ macOS(미서명): 우클릭 → 열기. Gatekeeper는 성격이 있습니다. `(
 **releases:** https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0
 
 
-### Agents
+### 에이전트
 
-OpenCode 에는 내장 에이전트 2개가 있으며 `Tab` 키로 전환할 수 있습니다.
+OpenCodeX(업스트림 OpenCode와 같이)에는 내장 에이전트가 있습니다. `Tab`으로 전환:
 
-- **build** - 기본값, 개발 작업을 위한 전체 권한 에이전트
-- **plan** - 분석 및 코드 탐색을 위한 읽기 전용 에이전트
-  - 기본적으로 파일 편집을 거부
-  - bash 명령 실행 전에 권한을 요청
-  - 낯선 코드베이스를 탐색하거나 변경을 계획할 때 적합
+- **build** — 기본, 개발 전체 권한
+- **plan** — 읽기 전용 분석/탐색
+  - 기본적으로 파일 편집 안 함
+  - bash 전에 확인
+  - 낯선 레포와 계획에 적합
 
-또한 복잡한 검색과 여러 단계 작업을 위한 **general** 서브 에이전트가 포함되어 있습니다.
-내부적으로 사용되며, 메시지에서 `@general` 로 호출할 수 있습니다.
+서브에이전트 **general** — 복잡한 검색과 다단계 작업(`@general`).
 
-[agents](https://opencode.ai/docs/agents) 에 대해 더 알아보세요.
+### 그 외 포함
+
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
 ### 문서
 
-OpenCode 설정에 대한 자세한 내용은 [**문서**](https://opencode.ai/docs) 를 참고하세요.
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | 실제로 돌아가는 것 |
+| [cli](docs/cli-premium.md) | 터미널 extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | config 레이아웃 |
+| [security](SECURITY.md) | 안 타 죽는 법 |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
-### 기여하기
+### 기여
 
-OpenCode 에 기여하고 싶다면, Pull Request 를 제출하기 전에 [contributing docs](./CONTRIBUTING.md) 를 읽어주세요.
+**OpenCodeX** 기여: [CONTRIBUTING.md](CONTRIBUTING.md) 읽고 [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX)에 PR/issue.
 
-### OpenCode 기반으로 만들기
+### 라이선스와 출처
 
-OpenCode 와 관련된 프로젝트를 진행하면서 이름에 "opencode"(예: "opencode-dashboard" 또는 "opencode-mobile") 를 포함한다면, README 에 해당 프로젝트가 OpenCode 팀이 만든 것이 아니며 어떤 방식으로도 우리와 제휴되어 있지 않다는 점을 명시해 주세요.
+- **License:** [MIT](LICENSE) (업스트림 OpenCode와 같은 계열)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX는 **비공식 포크**입니다. OpenCode Inc / Anomalyco도, “공식” 앱도 아닙니다.
 
-**커뮤니티에 참여하기** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+깨지면 → [issue](https://github.com/evdark/OpenCodeX/issues). 안 깨져도 OK. `ヽ(・∀・)ﾉ`

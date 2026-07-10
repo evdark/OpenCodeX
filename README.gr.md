@@ -85,33 +85,49 @@ macOS (unsigned): δεξί κλικ → Άνοιγμα. Το Gatekeeper έχει
 **releases:** https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0
 
 
-### Πράκτορες
+### Agents
 
-Το OpenCode περιλαμβάνει δύο ενσωματωμένους πράκτορες μεταξύ των οποίων μπορείτε να εναλλάσσεστε με το πλήκτρο `Tab`.
+Το OpenCodeX (όπως το upstream OpenCode) έχει ενσωματωμένους agents — αλλαγή με `Tab`:
 
-- **build** - Προεπιλεγμένος πράκτορας με πλήρη πρόσβαση για εργασία πάνω σε κώδικα
-- **plan** - Πράκτορας μόνο ανάγνωσης για ανάλυση και εξερεύνηση κώδικα
-  - Αρνείται την επεξεργασία αρχείων από προεπιλογή
-  - Ζητά άδεια πριν εκτελέσει εντολές bash
-  - Ιδανικός για εξερεύνηση άγνωστων αρχείων πηγαίου κώδικα ή σχεδιασμό αλλαγών
+- **build** — προεπιλογή, πλήρης πρόσβαση ανάπτυξης
+- **plan** — read-only ανάλυση / εξερεύνηση
+  - δεν επεξεργάζεται αρχεία by default
+  - ρωτά πριν από bash
+  - καλό για άγνωστα repos και planning
 
-Περιλαμβάνεται επίσης ένας **general** υποπράκτορας για σύνθετες αναζητήσεις και πολυβηματικές διεργασίες.
-Χρησιμοποιείται εσωτερικά και μπορεί να κληθεί χρησιμοποιώντας `@general` στα μηνύματα.
+Subagent **general** για σύνθετες αναζητήσεις και multi-step (`@general`).
 
-Μάθετε περισσότερα για τους [πράκτορες](https://opencode.ai/docs/agents).
+### Τι άλλο περιλαμβάνεται
 
-### Οδηγός Χρήσης
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
-Για περισσότερες πληροφορίες σχετικά με τη ρύθμιση του OpenCode, [**πλοηγήσου στον οδηγό χρήσης μας**](https://opencode.ai/docs).
+### Docs
 
-### Συνεισφορά
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | τι πραγματικά τρέχει |
+| [cli](docs/cli-premium.md) | terminal extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | config layout |
+| [security](SECURITY.md) | πώς να μην καείς |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
-Εάν ενδιαφέρεσαι να συνεισφέρεις στο OpenCode, διαβάστε τα [οδηγό χρήσης συνεισφοράς](./CONTRIBUTING.md) πριν υποβάλεις ένα pull request.
+### Συμβολή
 
-### Δημιουργία πάνω στο OpenCode
+Για συνεισφορά στο **OpenCodeX**: διάβασε [CONTRIBUTING.md](CONTRIBUTING.md) και άνοιξε PR/issue στο [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX).
 
-Εάν εργάζεσαι σε ένα έργο σχετικό με το OpenCode και χρησιμοποιείτε το "opencode" ως μέρος του ονόματός του, για παράδειγμα "opencode-dashboard" ή "opencode-mobile", πρόσθεσε μια σημείωση στο README σας για να διευκρινίσεις ότι δεν είναι κατασκευασμένο από την ομάδα του OpenCode και δεν έχει καμία σχέση με εμάς.
+### Άδεια και attribution
 
----
+- **License:** [MIT](LICENSE) (ίδια οικογένεια με upstream OpenCode)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
-**Γίνε μέλος της κοινότητάς μας** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+Το OpenCodeX είναι **ανεπίσημο fork**. Δεν είμαστε OpenCode Inc / Anomalyco ούτε η «επίσημη» εφαρμογή.
+
+Αν σπάσει → [issue](https://github.com/evdark/OpenCodeX/issues). Αν όχι, επίσης ok. `ヽ(・∀・)ﾉ`

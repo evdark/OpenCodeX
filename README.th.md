@@ -87,31 +87,47 @@ macOS (unsigned): คลิกขวา → เปิด Gatekeeper มีบุ
 
 ### เอเจนต์
 
-OpenCode รวมเอเจนต์ในตัวสองตัวที่คุณสามารถสลับได้ด้วยปุ่ม `Tab`
+OpenCodeX (เหมือน upstream OpenCode) มีเอเจนต์ในตัว — สลับด้วย `Tab`:
 
-- **build** - เอเจนต์เริ่มต้น มีสิทธิ์เข้าถึงแบบเต็มสำหรับงานพัฒนา
-- **plan** - เอเจนต์อ่านอย่างเดียวสำหรับการวิเคราะห์และการสำรวจโค้ด
-  - ปฏิเสธการแก้ไขไฟล์โดยค่าเริ่มต้น
-  - ขอสิทธิ์ก่อนเรียกใช้คำสั่ง bash
-  - เหมาะสำหรับสำรวจโค้ดเบสที่ไม่คุ้นเคยหรือวางแผนการเปลี่ยนแปลง
+- **build** — ค่าเริ่มต้น สิทธิ์พัฒนาเต็ม
+- **plan** — วิเคราะห์/สำรวจแบบอ่านอย่างเดียว
+  - ค่าเริ่มต้นไม่แก้ไฟล์
+  - ถามก่อน bash
+  - เหมาะกับ repo ใหม่และวางแผน
 
-นอกจากนี้ยังมีเอเจนต์ย่อย **general** สำหรับการค้นหาที่ซับซ้อนและงานหลายขั้นตอน
-ใช้ภายในและสามารถเรียกใช้ได้โดยใช้ `@general` ในข้อความ
+ซับเอเจนต์ **general** สำหรับค้นหาซับซ้อนและงานหลายขั้น (`@general`)
 
-เรียนรู้เพิ่มเติมเกี่ยวกับ [เอเจนต์](https://opencode.ai/docs/agents)
+### อะไรอีกบ้าง
 
-### เอกสารประกอบ
+| | |
+| --- | --- |
+| IDE | tabs · tray · preview · queue · providers · settings |
+| CLI (`ocx`) | setup · resume · dashboard · memory / git / search |
+| docs | [installation](docs/installation.md) · [FEATURES](FEATURES.md) · [cli](docs/cli-premium.md) · [desktop](docs/desktop-updates.md) · [config](docs/configuration.md) |
 
-สำหรับข้อมูลเพิ่มเติมเกี่ยวกับวิธีกำหนดค่า OpenCode [**ไปที่เอกสารของเรา**](https://opencode.ai/docs)
+### เอกสาร
+
+| | |
+| --- | --- |
+| [installation](docs/installation.md) | CLI + IDE |
+| [features](FEATURES.md) | สิ่งที่รันได้จริง |
+| [cli](docs/cli-premium.md) | terminal extras |
+| [desktop](docs/desktop-updates.md) | updater / packaging |
+| [configuration](docs/configuration.md) | config layout |
+| [security](SECURITY.md) | อย่าจุดไฟตัวเอง |
+| [contributing](CONTRIBUTING.md) | PRs |
+| [NOTICE](NOTICE) | fork / non-affiliation |
 
 ### การมีส่วนร่วม
 
-หากคุณสนใจที่จะมีส่วนร่วมใน OpenCode โปรดอ่าน [เอกสารการมีส่วนร่วม](./CONTRIBUTING.md) ก่อนส่ง Pull Request
+อยากช่วย **OpenCodeX**: อ่าน [CONTRIBUTING.md](CONTRIBUTING.md) แล้วเปิด PR/issue ที่ [evdark/OpenCodeX](https://github.com/evdark/OpenCodeX)
 
-### การสร้างบน OpenCode
+### ไลเซนส์และการอ้างอิง
 
-หากคุณทำงานในโปรเจกต์ที่เกี่ยวข้องกับ OpenCode และใช้ "opencode" เป็นส่วนหนึ่งของชื่อ เช่น "opencode-dashboard" หรือ "opencode-mobile" โปรดเพิ่มหมายเหตุใน README ของคุณเพื่อชี้แจงว่าไม่ได้สร้างโดยทีม OpenCode และไม่ได้เกี่ยวข้องกับเราในทางใด
+- **License:** [MIT](LICENSE) (ตระกูลเดียวกับ upstream OpenCode)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice:** [NOTICE](NOTICE)
 
----
+OpenCodeX เป็น **fork ไม่เป็นทางการ** เราไม่ใช่ OpenCode Inc / Anomalyco และไม่ใช่แอป «ทางการ»
 
-**ร่วมชุมชนของเรา** [Discord](https://discord.gg/opencode) | [X.com](https://x.com/opencode)
+พัง → [issue](https://github.com/evdark/OpenCodeX/issues) ไม่พังก็ดี `ヽ(・∀・)ﾉ`
