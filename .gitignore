@@ -40,3 +40,15 @@ artifacts/
 cli/
 .opencode/skills/
 **/.DS_Store
+
+# Logs / local debug (never ship)
+*.log
+**/debug-*.log
+packages/storybook/debug-storybook.log
+
+# Marketing lander media (console SaaS, not product runtime)
+packages/console/app/src/asset/lander/*.mp4
+
+# Local OS junk
+.DS_Store
+**/.DS_Store

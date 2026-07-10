@@ -117,9 +117,9 @@ To test locally:
 
    ```bash
    MODEL=anthropic/claude-sonnet-4-20250514 \
-     ANTHROPIC_API_KEY=sk-ant-api03-1234567890 \
+     ANTHROPIC_API_KEY=sk-ant-api03-REDACTED-PLACEHOLDER \
      GITHUB_RUN_ID=dummy \
-     MOCK_TOKEN=github_pat_1234567890 \
+     MOCK_TOKEN=github_pat_REDACTED_PLACEHOLDER \
      MOCK_EVENT='{"eventName":"issue_comment",...}' \
      bun /path/to/opencode/github/index.ts
    ```
