@@ -1,6 +1,10 @@
 <div align="center">
 
-<img src="docs/assets/brand/opencodex-mark.svg" alt="OpenCodeX" width="96" height="96" />
+<a href="https://github.com/evdark/OpenCodeX">
+  <img src="https://i.pinimg.com/1200x/fc/90/da/fc90da0880991d0d7c2abbcd97c3b90e.jpg" alt="OpenCodeX" width="100%" />
+</a>
+
+<img src="docs/assets/brand/opencodex-mark.svg" alt="OpenCodeX mark" width="96" height="96" />
 
 ```
    ide + cli · one messy core
