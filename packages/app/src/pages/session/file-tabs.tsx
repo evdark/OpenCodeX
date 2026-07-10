@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createSignal, Match, on, onCleanup, Switch } from "solid-js"
+import { createEffect, createMemo, createSignal, Match, on, onCleanup, Show, Switch } from "solid-js"
 import { createStore } from "solid-js/store"
 import { Dynamic } from "solid-js/web"
 import { makeEventListener } from "@solid-primitives/event-listener"
@@ -199,6 +199,10 @@ export function FileTabContent(props: { tab: string }) {
     return file.get(p)
   })
   const contents = createMemo(() => state()?.content?.content ?? "")
+  const isText = createMemo(() => !state()?.content || state()?.content?.type === "text")
+  const [editing, setEditing] = createSignal(false)
+  const [draft, setDraft] = createSignal("")
+  const [saving, setSaving] = createSignal(false)
   const cacheKey = createMemo(() => sampledChecksum(contents()))
   const selectedLines = createMemo<SelectedLineRange | null>(() => {
     const p = path()
@@ -394,6 +398,40 @@ export function FileTabContent(props: { tab: string }) {
     scrollSync.queueRestore()
   })
 
+  const startEdit = () => {
+    if (!isText()) return
+    setDraft(contents())
+    setEditing(true)
+  }
+
+  const cancelEdit = () => {
+    setEditing(false)
+    setDraft("")
+  }
+
+  const saveEdit = async () => {
+    const p = path()
+    if (!p || saving()) return
+    setSaving(true)
+    try {
+      await file.write(p, draft())
+      setEditing(false)
+      showToast({
+        variant: "success",
+        icon: "circle-check",
+        title: language.t("file.edit.saved"),
+      })
+    } catch (error) {
+      showToast({
+        variant: "error",
+        title: language.t("file.edit.failed"),
+        description: error instanceof Error ? error.message : String(error),
+      })
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const renderFile = (source: string) => (
     <div class="relative overflow-hidden pb-40">
       <Dynamic
@@ -441,8 +479,59 @@ export function FileTabContent(props: { tab: string }) {
 
   return (
     <Tabs.Content value={props.tab} class="mt-3 relative h-full">
+      <Show when={state()?.loaded && isText()}>
+        <div class="absolute top-0 right-3 z-10 flex items-center gap-2">
+          <Show
+            when={editing()}
+            fallback={
+              <IconButton
+                icon="edit"
+                variant="ghost"
+                size="small"
+                aria-label={language.t("file.edit")}
+                onClick={startEdit}
+              />
+            }
+          >
+            <IconButton
+              icon="check"
+              variant="ghost"
+              size="small"
+              disabled={saving()}
+              aria-label={language.t("file.edit.save")}
+              onClick={() => void saveEdit()}
+            />
+            <IconButton
+              icon="close"
+              variant="ghost"
+              size="small"
+              disabled={saving()}
+              aria-label={language.t("file.edit.cancel")}
+              onClick={cancelEdit}
+            />
+          </Show>
+        </div>
+      </Show>
       <ScrollView class="h-full" viewportRef={scrollSync.setViewport} onScroll={scrollSync.handleScroll as any}>
         <Switch>
+          <Match when={state()?.loaded && editing()}>
+            <textarea
+              class="h-full min-h-[320px] w-full resize-none border-0 bg-transparent px-6 py-4 font-mono text-13-regular text-text-strong outline-none"
+              value={draft()}
+              spellcheck={false}
+              onInput={(event) => setDraft(event.currentTarget.value)}
+              onKeyDown={(event) => {
+                if ((event.metaKey || event.ctrlKey) && event.key === "s") {
+                  event.preventDefault()
+                  void saveEdit()
+                }
+                if (event.key === "Escape") {
+                  event.preventDefault()
+                  cancelEdit()
+                }
+              }}
+            />
+          </Match>
           <Match when={state()?.loaded}>{renderFile(contents())}</Match>
           <Match when={state()?.loading}>
             <div class="px-6 py-4 text-text-weak">{language.t("common.loading")}...</div>

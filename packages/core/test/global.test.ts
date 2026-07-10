@@ -6,7 +6,8 @@ import { Global } from "@opencode-ai/core/global"
 
 describe("global paths", () => {
   test("tmp path is under the system temp directory", () => {
-    expect(Global.Path.tmp).toBe(path.join(os.tmpdir(), "opencode"))
+    const app = process.env.OPENCODEX === "1" || process.env.OPENCODE_PLUS === "1" ? "opencodex" : "opencode"
+    expect(Global.Path.tmp).toBe(path.join(os.tmpdir(), app))
     expect(Global.make().tmp).toBe(Global.Path.tmp)
   })
 

@@ -327,6 +327,14 @@ export const { use: useFile, provider: FileProvider } = createSimpleContext({
       return next
     }
 
+    const write = async (input: string, content: string) => {
+      const file = path.normalize(input)
+      if (!file) return
+      await mutations().write(file, content)
+      await load(file, { force: true })
+      return file
+    }
+
     onCleanup(() => {
       stop()
       viewCache.clear()
@@ -358,6 +366,7 @@ export const { use: useFile, provider: FileProvider } = createSimpleContext({
       rename,
       remove,
       copy,
+      write,
       scrollTop,
       scrollLeft,
       setScrollTop,

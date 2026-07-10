@@ -2024,6 +2024,7 @@ export default function Page() {
         class="flex-1 min-h-0 flex flex-col md:flex-row"
         classList={{
           "gap-2 p-2": settings.general.newLayoutDesigns(),
+          "md:flex-row-reverse": layout.sidePanel.side() === "left",
         }}
       >
         <Show when={!isDesktop() && !!params.id && !settings.general.newLayoutDesigns()}>{mobileTabs()}</Show>
@@ -2056,12 +2057,14 @@ export default function Page() {
             <div onPointerDown={() => size.start()}>
               <ResizeHandle
                 classList={{
-                  "-right-1": settings.general.newLayoutDesigns(),
+                  "-right-1": settings.general.newLayoutDesigns() && layout.sidePanel.side() === "right",
+                  "-left-1": settings.general.newLayoutDesigns() && layout.sidePanel.side() === "left",
                 }}
                 direction="horizontal"
                 size={layout.session.width()}
                 min={400}
                 max={typeof window === "undefined" ? 1000 : window.innerWidth * 0.8}
+                edge={layout.sidePanel.side() === "left" ? "start" : "end"}
                 onResize={(width) => {
                   size.touch()
                   layout.session.resize(width)

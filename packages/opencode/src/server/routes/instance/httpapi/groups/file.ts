@@ -102,6 +102,11 @@ export const FileCopyPayload = Schema.Struct({
   to: Schema.optional(Schema.String),
 })
 
+export const FileWritePayload = Schema.Struct({
+  path: Schema.String,
+  content: Schema.String,
+})
+
 export const FileMutationResult = Schema.Struct({
   path: Schema.String,
 })
@@ -116,6 +121,7 @@ export const FilePaths = {
   rename: "/file/rename",
   remove: "/file",
   copy: "/file/copy",
+  write: "/file/write",
 } as const
 
 export const FileApi = HttpApi.make("file")
@@ -215,6 +221,18 @@ export const FileApi = HttpApi.make("file")
             identifier: "file.copy",
             summary: "Copy file",
             description: "Copy a file or directory within the project.",
+          }),
+        ),
+        HttpApiEndpoint.post("write", FilePaths.write, {
+          query: WorkspaceRoutingQuery,
+          payload: FileWritePayload,
+          success: described(FileMutationResult, "Written path"),
+          error: HttpApiError.BadRequest,
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "file.write",
+            summary: "Write file",
+            description: "Write text content to a file within the project.",
           }),
         ),
       )

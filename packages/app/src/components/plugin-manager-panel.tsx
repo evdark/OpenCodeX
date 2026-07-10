@@ -1,83 +1,28 @@
 import { For, Show, createMemo } from "solid-js"
 import { Button } from "@opencode-ai/ui/button"
-import { showToast } from "@/utils/toast"
+import { useDialog } from "@opencode-ai/ui/context/dialog"
 import { useLanguage } from "@/context/language"
-import { usePlatform } from "@/context/platform"
 import { useServerSync } from "@/context/server-sync"
 import { configPluginIds } from "@/utils/config-plugin"
+import { DialogConfigEditor } from "./dialog-config-editor"
 
-function configFileCandidates(configDir: string) {
-  const sep = configDir.includes("\\") ? "\\" : "/"
-  const base = configDir.endsWith(sep) ? configDir.slice(0, -1) : configDir
-  return [`${base}${sep}opencode.jsonc`, `${base}${sep}opencode.json`]
-}
-
+/** Compact panel kept for legacy surfaces; primary UX is Settings → Plugins. */
 export function PluginManagerPanel() {
   const language = useLanguage()
-  const platform = usePlatform()
+  const dialog = useDialog()
   const serverSync = useServerSync()
 
   const installed = createMemo(() => configPluginIds(serverSync().data.config.plugin))
   const configDir = createMemo(() => serverSync().data.path.config)
 
-  const openConfig = async () => {
-    const dir = configDir()
-    if (!dir) {
-      showToast({
-        variant: "error",
-        title: language.t("pluginManager.failed"),
-        description: language.t("pluginManager.noConfigPath"),
-      })
-      return
-    }
-
-    const candidates = configFileCandidates(dir)
-    // Prefer jsonc when present; fall back to json (created if neither exists via first path).
-    const primary = candidates[0]
-
-    if (platform.openPath) {
-      try {
-        // Try jsonc first, then json — openPath fails only if path is invalid on some hosts.
-        for (const path of candidates) {
-          try {
-            await platform.openPath(path)
-            showToast({
-              variant: "success",
-              title: language.t("pluginManager.opened"),
-              description: path,
-            })
-            return
-          } catch {
-            // try next candidate
-          }
-        }
-        await platform.openPath(primary)
-        showToast({
-          variant: "success",
-          title: language.t("pluginManager.opened"),
-          description: primary,
-        })
-        return
-      } catch (error) {
-        showToast({
-          variant: "error",
-          title: language.t("pluginManager.failed"),
-          description: error instanceof Error ? error.message : String(error),
-        })
-        return
-      }
-    }
-
-    // Web / no native open: open a small helper tab with the path to copy.
-    showToast({
-      title: language.t("pluginManager.pathReady"),
-      description: primary,
-    })
-    try {
-      await navigator.clipboard.writeText(primary)
-    } catch {
-      // clipboard may be unavailable
-    }
+  const openConfig = () => {
+    void dialog.show(() => (
+      <DialogConfigEditor
+        title={language.t("pluginManager.title")}
+        description={language.t("pluginManager.description")}
+        focusKey="plugin"
+      />
+    ))
   }
 
   return (
@@ -88,8 +33,8 @@ export function PluginManagerPanel() {
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <Button size="small" variant="secondary" onClick={() => void openConfig()}>
-          {language.t("pluginManager.install")}
+        <Button size="small" variant="secondary" onClick={openConfig}>
+          {language.t("configEditor.open")}
         </Button>
         <Show when={configDir()}>
           {(dir) => <div class="text-11-regular text-text-weaker font-mono truncate max-w-full">{dir()}</div>}

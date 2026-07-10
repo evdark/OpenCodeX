@@ -11,10 +11,6 @@ import { useServerSync } from "@/context/server-sync"
 import { DialogConnectProvider, useProviderConnectController } from "../dialog-connect-provider"
 import { DialogCustomProvider } from "../dialog-custom-provider"
 import type { CustomProviderInitialValue } from "../dialog-custom-provider-form"
-import { ProviderProfilesPanel } from "../provider-profiles"
-import { useProviderProfiles } from "@/context/provider-profiles"
-import { ProviderSetupWizard } from "../provider-setup-wizard"
-import { PluginManagerPanel } from "../plugin-manager-panel"
 import { SettingsListV2 } from "./parts/list"
 import { useSettings } from "@/context/settings"
 import "./settings-v2.css"
@@ -43,7 +39,6 @@ export const SettingsProvidersV2: Component<{ onBack?: () => void }> = (props) =
   const serverSync = useServerSync()
   const providers = useProviders()
   const providerConnect = useProviderConnectController({ onBack: props.onBack })
-  const profiles = useProviderProfiles()
   const healthEnabled = createMemo(() => settings.opencodePlus.providerHealth.enabled())
 
   const connect = (provider?: string) => {
@@ -169,41 +164,6 @@ export const SettingsProvidersV2: Component<{ onBack?: () => void }> = (props) =
       })
   }
 
-  const applyProfile = async (id: string) => {
-    const enabledProviders = profiles.activate(id)
-    if (!enabledProviders) return
-    
-    const currentEnabled = connected().map(p => p.id)
-    
-    // Providers to disable
-    for (const providerId of currentEnabled) {
-      if (!enabledProviders.includes(providerId)) {
-        const item = connected().find(p => p.id === providerId)
-        if (item && canDisconnect(item)) {
-          // Fire disconnect without toast individually
-          if (isConfigCustom(item.id)) {
-            await serverSdk().client.auth.remove({ providerID: item.id }).catch(() => undefined)
-            const before = serverSync().data.config.disabled_providers ?? []
-            const next = before.includes(item.id) ? before : [...before, item.id]
-            serverSync().set("config", "disabled_providers", next)
-            await serverSync().updateConfig({ disabled_providers: next }).catch(() => undefined)
-          } else {
-            await serverSdk().client.auth.remove({ providerID: item.id }).catch(() => undefined)
-          }
-        }
-      }
-    }
-    
-    await serverSdk().client.global.dispose().catch(() => undefined)
-    
-    showToast({
-      variant: "success",
-      icon: "check",
-      title: language.t("settings.providers.profiles.applied.title"),
-      description: language.t("settings.providers.profiles.applied.description")
-    })
-  }
-
   return (
     <>
       <div class="settings-v2-tab-header">
@@ -211,27 +171,6 @@ export const SettingsProvidersV2: Component<{ onBack?: () => void }> = (props) =
       </div>
 
       <div class="settings-v2-tab-body settings-v2-providers">
-        <div class="settings-v2-section">
-          <div class="mb-2 text-14-medium text-text-strong">{language.t("providerStudio.title")}</div>
-          <div class="mb-3 text-12-regular text-text-weak">{language.t("providerStudio.description")}</div>
-          <ProviderSetupWizard onBack={props.onBack} />
-        </div>
-
-        <div class="settings-v2-section">
-          <ProviderProfilesPanel
-            connectedProviderIDs={connected().map((provider) => provider.id)}
-            profiles={profiles.profiles()}
-            active={profiles.active()}
-            onCreate={profiles.create}
-            onActivate={applyProfile}
-            onDelete={profiles.remove}
-          />
-        </div>
-
-        <div class="settings-v2-section">
-          <PluginManagerPanel />
-        </div>
-
         <div class="settings-v2-section" data-component="connected-providers-section">
           <h3 class="settings-v2-section-title">{language.t("settings.providers.section.connected")}</h3>
           <SettingsListV2>

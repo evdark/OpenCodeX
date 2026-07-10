@@ -30,11 +30,13 @@ what OpenCodeX actually ships today. if it's not here, it's not shipped.
 | Feature | Notes |
 | --- | --- |
 | Provider catalog | Upstream catalog |
-| Custom OpenAI-compatible providers | Create + edit (studio path) |
-| Provider setup wizard | Guided connect / custom |
-| Provider profiles | Save connected set; apply disconnects extras |
+| Custom OpenAI-compatible providers | Create + connect from Providers |
 | Provider health tags | Settings badges when enabled |
-| Plugin manager | Opens `opencode.json` to install plugins (no terminal); lists configured plugins |
+| Plugin manager | Settings → Plugins; in-app config editor |
+| MCP settings | Settings → MCP; toggle servers + edit config |
+| File edit in IDE | Edit project text files from session file tabs |
+| First-run data setup | Import from OpenCode or clean OpenCodeX home |
+| Panel layout sides | Queue + files/review left/right; reset to stock |
 | Improved provider errors | Tips when gate is on |
 
 ## OpenCodeX settings

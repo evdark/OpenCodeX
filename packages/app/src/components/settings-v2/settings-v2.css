@@ -495,14 +495,28 @@
 }
 
 .settings-v2-tab-body.settings-v2-models {
-  gap: 24px;
+  gap: 0;
+}
+
+/* Even vertical rhythm: equal space above/below each provider header */
+.settings-v2-models .settings-v2-section {
+  gap: 0;
+}
+
+.settings-v2-models .settings-v2-section + .settings-v2-section {
+  margin-top: 8px;
 }
 
 .settings-v2-models-group-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-bottom: 8px;
+  margin-block: 12px;
+  min-height: 20px;
+}
+
+.settings-v2-models .settings-v2-section:first-child .settings-v2-models-group-header {
+  margin-top: 0;
 }
 
 .settings-v2-models .settings-v2-section-title {
@@ -516,7 +530,8 @@
   color: var(--v2-icon-icon-base);
 }
 
-.settings-v2-models .settings-v2-section-title + [data-component="settings-v2-list"] {
+.settings-v2-models .settings-v2-section-title + [data-component="settings-v2-list"],
+.settings-v2-models .settings-v2-models-group-header + [data-component="settings-v2-list"] {
   margin-top: 0;
 }
 

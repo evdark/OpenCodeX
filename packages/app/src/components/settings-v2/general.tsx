@@ -438,6 +438,60 @@ export const SettingsGeneralV2: Component<{
         </SettingsRowV2>
 
         <SettingsRowV2
+          title={language.t("settings.layout.queueSide.title")}
+          description={language.t("settings.layout.queueSide.description")}
+        >
+          <SelectV2
+            appearance="inline"
+            data-action="settings-queue-side"
+            options={[
+              { value: "right" as const, label: language.t("settings.layout.queueSide.right") },
+              { value: "left" as const, label: language.t("settings.layout.queueSide.left") },
+            ]}
+            current={
+              layout.queue.side() === "left"
+                ? { value: "left" as const, label: language.t("settings.layout.queueSide.left") }
+                : { value: "right" as const, label: language.t("settings.layout.queueSide.right") }
+            }
+            placement="bottom-end"
+            gutter={6}
+            value={(o) => o.value}
+            label={(o) => o.label}
+            onSelect={(option) => {
+              if (!option) return
+              layout.queue.setSide(option.value)
+            }}
+          />
+        </SettingsRowV2>
+
+        <SettingsRowV2
+          title={language.t("settings.layout.sidePanelSide.title")}
+          description={language.t("settings.layout.sidePanelSide.description")}
+        >
+          <SelectV2
+            appearance="inline"
+            data-action="settings-side-panel-side"
+            options={[
+              { value: "right" as const, label: language.t("settings.layout.sidePanelSide.right") },
+              { value: "left" as const, label: language.t("settings.layout.sidePanelSide.left") },
+            ]}
+            current={
+              layout.sidePanel.side() === "left"
+                ? { value: "left" as const, label: language.t("settings.layout.sidePanelSide.left") }
+                : { value: "right" as const, label: language.t("settings.layout.sidePanelSide.right") }
+            }
+            placement="bottom-end"
+            gutter={6}
+            value={(o) => o.value}
+            label={(o) => o.label}
+            onSelect={(option) => {
+              if (!option) return
+              layout.sidePanel.setSide(option.value)
+            }}
+          />
+        </SettingsRowV2>
+
+        <SettingsRowV2
           title={language.t("settings.general.row.resetLayout.title")}
           description={language.t("settings.general.row.resetLayout.description")}
         >

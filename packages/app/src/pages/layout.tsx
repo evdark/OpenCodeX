@@ -2340,8 +2340,13 @@ export default function LegacyLayout(props: ParentProps) {
                   !state.sizing,
               }}
               style={{
-                "--main-left": layout.sidebar.opened() ? `${side()}px` : "4rem",
-                "--main-right": layout.queue.opened() ? `${layout.queue.width()}px` : "0px",
+                "--main-left": (() => {
+                  const base = layout.sidebar.opened() ? side() : 64
+                  if (layout.queue.opened() && layout.queue.side() === "left") return `${base + layout.queue.width()}px`
+                  return layout.sidebar.opened() ? `${side()}px` : "4rem"
+                })(),
+                "--main-right":
+                  layout.queue.opened() && layout.queue.side() === "right" ? `${layout.queue.width()}px` : "0px",
               }}
             >
               <main
@@ -2355,17 +2360,41 @@ export default function LegacyLayout(props: ParentProps) {
               </main>
               <Show when={layout.queue.opened()}>
                 <aside
-                  class="hidden xl:flex absolute inset-y-0 z-30 flex-col bg-background-base border-l border-border-weaker-base"
-                  style={{ width: `${layout.queue.width()}px`, right: `-${layout.queue.width()}px` }}
+                  classList={{
+                    "hidden xl:flex absolute inset-y-0 z-30 flex-col bg-background-base": true,
+                    "border-l border-border-weaker-base": layout.queue.side() === "right",
+                    "border-r border-border-weaker-base": layout.queue.side() === "left",
+                  }}
+                  style={
+                    layout.queue.side() === "right"
+                      ? { width: `${layout.queue.width()}px`, right: `-${layout.queue.width()}px` }
+                      : {
+                          width: `${layout.queue.width()}px`,
+                          left: layout.sidebar.opened() ? `${side()}px` : "4rem",
+                        }
+                  }
                 >
-                  <div class="h-10 shrink-0 border-b border-border-weaker-base flex items-center px-4">
+                  <div class="h-10 shrink-0 border-b border-border-weaker-base flex items-center justify-between gap-2 px-4">
                     <span class="text-sm font-medium text-text-base">{language.t("session.followupDock.queued")}</span>
+                    <button
+                      type="button"
+                      class="text-11-regular text-text-weak hover:text-text-strong"
+                      onClick={() => layout.queue.setSide(layout.queue.side() === "right" ? "left" : "right")}
+                    >
+                      {layout.queue.side() === "right"
+                        ? language.t("settings.layout.queueSide.left")
+                        : language.t("settings.layout.queueSide.right")}
+                    </button>
                   </div>
                   <div class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden p-4">
                     {layout.queue.content()}
                   </div>
                   <div
-                    class="absolute inset-y-0 left-0 w-0 overflow-visible"
+                    classList={{
+                      "absolute inset-y-0 w-0 overflow-visible": true,
+                      "left-0": layout.queue.side() === "right",
+                      "right-0": layout.queue.side() === "left",
+                    }}
                     onPointerDown={() => setState("sizing", true)}
                   >
                     <ResizeHandle
@@ -2379,7 +2408,7 @@ export default function LegacyLayout(props: ParentProps) {
                         sizet = window.setTimeout(() => setState("sizing", false), 120)
                         layout.queue.resize(w)
                       }}
-                      edge="start"
+                      edge={layout.queue.side() === "right" ? "start" : "end"}
                     />
                   </div>
                 </aside>

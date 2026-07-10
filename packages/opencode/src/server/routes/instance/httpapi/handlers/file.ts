@@ -224,6 +224,21 @@ export const fileHandlers = HttpApiBuilder.group(InstanceHttpApi, "file", (handl
       return { path: toRelative(directory, target) }
     })
 
+    const write = Effect.fn("FileHttpApi.write")(function* (ctx: { payload: { path: string; content: string } }) {
+      const directory = (yield* InstanceState.context).directory
+      const target = resolveWithin(directory, ctx.payload.path)
+      if (!target) return yield* new HttpApiError.BadRequest({})
+
+      const fs = yield* FSUtil.Service
+      if (yield* fs.existsSafe(target)) {
+        if (yield* fs.isDir(target)) return yield* new HttpApiError.BadRequest({})
+      }
+
+      yield* asBadRequest(fs.writeWithDirs(target, ctx.payload.content))
+      yield* publishWatcher(target, "change")
+      return { path: toRelative(directory, target) }
+    })
+
     return handlers
       .handle("findText", findText)
       .handle("findFile", findFile)
@@ -234,5 +249,6 @@ export const fileHandlers = HttpApiBuilder.group(InstanceHttpApi, "file", (handl
       .handle("rename", rename)
       .handle("remove", remove)
       .handle("copy", copy)
+      .handle("write", write)
   }),
 ).pipe(Layer.provide(locationServiceMapLayer))

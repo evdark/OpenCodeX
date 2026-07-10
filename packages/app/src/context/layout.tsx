@@ -304,6 +304,10 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         queue: {
           opened: false,
           width: DEFAULT_SIDEBAR_WIDTH,
+          side: "right" as "left" | "right",
+        },
+        sidePanel: {
+          side: "right" as "left" | "right",
         },
         sessionTabs: {} as Record<string, SessionTabs>,
         sessionView: {} as Record<string, SessionView>,
@@ -620,6 +624,8 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
           setStore("session", "width", DEFAULT_SESSION_WIDTH)
           setStore("queue", "opened", false)
           setStore("queue", "width", DEFAULT_SIDEBAR_WIDTH)
+          setStore("queue", "side", "right")
+          setStore("sidePanel", "side", "right")
         })
       },
       home: {
@@ -785,26 +791,34 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
       queue: {
         opened: createMemo(() => store.queue?.opened ?? false),
         content: createMemo(() => ephemeral.queueContent),
+        side: createMemo(() => store.queue?.side ?? "right"),
         setContent(content?: JSX.Element) {
           setEphemeral("queueContent", () => content)
         },
+        setSide(side: "left" | "right") {
+          if (!store.queue) {
+            setStore("queue", { opened: false, width: DEFAULT_SIDEBAR_WIDTH, side })
+            return
+          }
+          setStore("queue", "side", side)
+        },
         open() {
           if (!store.queue) {
-            setStore("queue", { opened: true, width: DEFAULT_SIDEBAR_WIDTH })
+            setStore("queue", { opened: true, width: DEFAULT_SIDEBAR_WIDTH, side: "right" })
             return
           }
           setStore("queue", "opened", true)
         },
         close() {
           if (!store.queue) {
-            setStore("queue", { opened: false, width: DEFAULT_SIDEBAR_WIDTH })
+            setStore("queue", { opened: false, width: DEFAULT_SIDEBAR_WIDTH, side: "right" })
             return
           }
           setStore("queue", "opened", false)
         },
         toggle() {
           if (!store.queue) {
-            setStore("queue", { opened: true, width: DEFAULT_SIDEBAR_WIDTH })
+            setStore("queue", { opened: true, width: DEFAULT_SIDEBAR_WIDTH, side: "right" })
             return
           }
           setStore("queue", "opened", (x) => !x)
@@ -812,10 +826,20 @@ export const { use: useLayout, provider: LayoutProvider } = createSimpleContext(
         width: createMemo(() => store.queue?.width ?? DEFAULT_SIDEBAR_WIDTH),
         resize(width: number) {
           if (!store.queue) {
-            setStore("queue", { opened: false, width })
+            setStore("queue", { opened: false, width, side: "right" })
             return
           }
           setStore("queue", "width", width)
+        },
+      },
+      sidePanel: {
+        side: createMemo(() => store.sidePanel?.side ?? "right"),
+        setSide(side: "left" | "right") {
+          if (!store.sidePanel) {
+            setStore("sidePanel", { side })
+            return
+          }
+          setStore("sidePanel", "side", side)
         },
       },
       pendingMessage: {

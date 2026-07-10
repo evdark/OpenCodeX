@@ -200,12 +200,22 @@ export const PlusCommand = cmd({
 
 export const PlusSetupCommand = cmd({
   command: "setup",
-  describe: "first-run setup (desktop detect / import / skip)",
+  describe: "first-run setup (import OpenCode config or start fresh)",
   builder: (yargs) =>
     yargs
+      .option("import-opencode", {
+        type: "boolean",
+        describe: "copy OpenCode config/data into OpenCodeX folders (non-destructive)",
+        default: false,
+      })
       .option("import", {
         type: "boolean",
-        describe: "import desktop settings pointer if present",
+        describe: "alias of --import-opencode (also keeps desktop pointer when present)",
+        default: false,
+      })
+      .option("fresh", {
+        type: "boolean",
+        describe: "create empty OpenCodeX config/data folders",
         default: false,
       })
       .option("skip", {
@@ -221,12 +231,21 @@ export const PlusSetupCommand = cmd({
   async handler(args) {
     process.env.OPENCODEX = "1"
     process.env.OPENCODE_PLUS = "1"
+    const { applyHomeChoice, isSetupPending, appPaths, OPENCODE_APP, OPENCODEX_APP } = await import(
+      "@opencode-ai/core/opencodex-home"
+    )
     const settings = loadSettings()
     const desktopRoots = desktopStateCandidates().filter((dir) => existsSync(dir))
+    const opencodePaths = appPaths(OPENCODE_APP)
+    const opencodexPaths = appPaths(OPENCODEX_APP)
 
     UI.empty()
     UI.println(UI.Style.TEXT_INFO_BOLD + "OpenCodeX setup" + UI.Style.TEXT_NORMAL)
-    UI.println(`Data dir: ${plusHome()}`)
+    UI.println(`OpenCodeX data:   ${opencodexPaths.data}`)
+    UI.println(`OpenCodeX config: ${opencodexPaths.config}`)
+    UI.println(`OpenCode data:    ${opencodePaths.data}`)
+    UI.println(`OpenCode config:  ${opencodePaths.config}`)
+    UI.println(`Setup pending:    ${isSetupPending() ? "yes" : "no"}`)
 
     if (desktopRoots.length === 0) {
       UI.println("No desktop install detected.")
@@ -238,43 +257,58 @@ export const PlusSetupCommand = cmd({
     if (args.never) {
       settings.neverAskDesktopImport = true
       settings.firstLaunchDone = true
+      applyHomeChoice("fresh")
       saveSettings(settings)
       UI.println(UI.Style.TEXT_SUCCESS_BOLD + "OK" + UI.Style.TEXT_NORMAL + " — will not ask again.")
       return
     }
 
-    if (args.skip) {
+    if (args.skip || args.fresh) {
+      const result = applyHomeChoice("fresh")
       settings.firstLaunchDone = true
       saveSettings(settings)
-      UI.println(UI.Style.TEXT_SUCCESS_BOLD + "OK" + UI.Style.TEXT_NORMAL + " — setup skipped.")
+      UI.println(
+        UI.Style.TEXT_SUCCESS_BOLD +
+          "OK" +
+          UI.Style.TEXT_NORMAL +
+          ` — clean OpenCodeX home at ${result.paths.config}`,
+      )
       return
     }
 
-    if (args.import && desktopRoots[0]) {
-      const pointer = path.join(plusHome(), "desktop-state-path.txt")
-      writeJson(path.join(plusHome(), "desktop-opencode.settings.json"), {
-        importedFrom: desktopRoots[0],
-        at: Date.now(),
-      })
-      ensureDir(plusHome())
-      writeFileSync(pointer, desktopRoots[0] + "\n")
-      // Non-destructive: copy auth only if missing locally
-      const desktopAuth = path.join(desktopRoots[0], "auth.json")
-      const localAuth = path.join(Global.Path.data, "auth.json")
-      if (existsSync(desktopAuth) && !existsSync(localAuth)) {
-        copyFileSync(desktopAuth, localAuth)
-        UI.println("Copied desktop auth.json")
+    if (args.import || args.importOpencode) {
+      const result = applyHomeChoice("import")
+      if (desktopRoots[0]) {
+        const pointer = path.join(plusHome(), "desktop-state-path.txt")
+        writeJson(path.join(plusHome(), "desktop-opencode.settings.json"), {
+          importedFrom: desktopRoots[0],
+          at: Date.now(),
+        })
+        ensureDir(plusHome())
+        writeFileSync(pointer, desktopRoots[0] + "\n")
+        const desktopAuth = path.join(desktopRoots[0], "auth.json")
+        const localAuth = path.join(Global.Path.data, "auth.json")
+        if (existsSync(desktopAuth) && !existsSync(localAuth)) {
+          copyFileSync(desktopAuth, localAuth)
+          UI.println("Copied desktop auth.json")
+        }
       }
       settings.firstLaunchDone = true
       settings.lastImportAt = Date.now()
       saveSettings(settings)
-      UI.println(UI.Style.TEXT_SUCCESS_BOLD + "OK" + UI.Style.TEXT_NORMAL + " — desktop pointer imported.")
+      UI.println(
+        UI.Style.TEXT_SUCCESS_BOLD +
+          "OK" +
+          UI.Style.TEXT_NORMAL +
+          ` — imported ${result.imported} item(s) into OpenCodeX (existing files kept).`,
+      )
       return
     }
 
     settings.firstLaunchDone = true
+    if (isSetupPending()) applyHomeChoice("fresh")
     saveSettings(settings)
-    UI.println("Setup complete. Use --import / --skip / --never on next runs if needed.")
+    UI.println("Setup complete. Use --import-opencode or --fresh on next runs if needed.")
   },
 })
 

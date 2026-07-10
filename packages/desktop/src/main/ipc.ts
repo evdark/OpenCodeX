@@ -29,6 +29,8 @@ type Deps = {
   setDefaultServerUrl: (url: string | null) => Promise<void> | void
   isFirstLaunchOnboardingPending: () => Promise<boolean> | boolean
   finishFirstLaunchOnboarding: (createDefaultProject: boolean) => Promise<string | null> | string | null
+  isDataSetupPending: () => Promise<boolean> | boolean
+  applyDataSetupChoice: (choice: "import" | "fresh") => Promise<unknown> | unknown
   getDisplayBackend: () => Promise<string | null>
   setDisplayBackend: (backend: string | null) => Promise<void> | void
   parseMarkdown: (markdown: string) => Promise<string> | string
@@ -56,6 +58,10 @@ export function registerIpcHandlers(deps: Deps) {
   ipcMain.handle("is-first-launch-onboarding-pending", () => deps.isFirstLaunchOnboardingPending())
   ipcMain.handle("finish-first-launch-onboarding", (_event: IpcMainInvokeEvent, createDefaultProject: boolean) =>
     deps.finishFirstLaunchOnboarding(createDefaultProject),
+  )
+  ipcMain.handle("is-data-setup-pending", () => deps.isDataSetupPending())
+  ipcMain.handle("apply-data-setup-choice", (_event: IpcMainInvokeEvent, choice: "import" | "fresh") =>
+    deps.applyDataSetupChoice(choice),
   )
   ipcMain.handle("get-display-backend", () => deps.getDisplayBackend())
   ipcMain.handle("set-display-backend", (_event: IpcMainInvokeEvent, backend: string | null) =>

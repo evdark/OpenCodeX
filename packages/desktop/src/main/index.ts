@@ -19,7 +19,13 @@ import { awaitSidecarStartup, forwardInitializationFailure } from "./initializat
 import { exportDebugLogs, initCrashReporter, initLogging, startNetLog, write as writeLog } from "./logging"
 import { parseMarkdown } from "./markdown"
 import { createMenu } from "./menu"
-import { finishFirstLaunchOnboarding, isFirstLaunchOnboardingPending } from "./onboarding"
+import {
+  applyDataSetupChoice,
+  ensureDataSetupBeforeServer,
+  finishFirstLaunchOnboarding,
+  isDataSetupPending,
+  isFirstLaunchOnboardingPending,
+} from "./onboarding"
 import {
   getDefaultServerUrl,
   preferAppEnv,
@@ -114,6 +120,8 @@ const main = Effect.gen(function* () {
   } catch {}
 
   process.env.OPENCODE_DISABLE_EMBEDDED_WEB_UI = "true"
+  process.env.OPENCODEX = "1"
+  process.env.OPENCODE_PLUS = "1"
 
   const appId = app.isPackaged ? APP_IDS[CHANNEL] : "ai.opencodex.desktop.dev"
   const onboardingTestRoot = ((): string | undefined => {
@@ -247,6 +255,14 @@ const main = Effect.gen(function* () {
   const serverReady = Deferred.makeUnsafe<ServerReadyData, unknown>()
 
   yield* Effect.promise(() => app.whenReady())
+  yield* Effect.promise(() => ensureDataSetupBeforeServer()).pipe(
+    Effect.tap((choice) => Effect.sync(() => logger.log("data setup ready", { choice }))),
+    Effect.catch((error) =>
+      Effect.sync(() => {
+        logger.warn("data setup failed", error)
+      }),
+    ),
+  )
 
   if (!TEST_ONBOARDING) migrate()
   yield* Effect.promise(() => cleanupStoreFiles(app.getPath("userData"))).pipe(
@@ -304,6 +320,8 @@ const main = Effect.gen(function* () {
     setDefaultServerUrl: (url) => setDefaultServerUrl(url),
     isFirstLaunchOnboardingPending,
     finishFirstLaunchOnboarding,
+    isDataSetupPending,
+    applyDataSetupChoice,
     getDisplayBackend: async () => null,
     setDisplayBackend: async () => undefined,
     parseMarkdown: async (markdown) => parseMarkdown(markdown),

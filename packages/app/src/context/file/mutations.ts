@@ -58,5 +58,14 @@ export function createFileMutations(client: OpencodeClient) {
       if (result.error) throw new Error(mutationError(result.error, "Copy failed"))
       return result
     },
+    async write(path: string, content: string) {
+      const result = await request.post({
+        url: "/file/write",
+        body: { path, content },
+        headers: { "Content-Type": "application/json" },
+      })
+      if (result.error) throw new Error(mutationError(result.error, "Write failed"))
+      return result
+    },
   }
 }
