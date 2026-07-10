@@ -1,18 +1,14 @@
 <p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
+  <a href="https://github.com/evdark/OpenCodeX">
+    <img src="docs/assets/brand/opencodex-mark.svg" alt="OpenCodeX" width="96" height="96">
   </a>
 </p>
-<p align="center">オープンソースのAIコーディングエージェント。</p>
+<p align="center"><strong>OpenCodeX</strong> — unofficial OpenCode fork · IDE + CLI · same engine</p>
 <p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
+  <a href="https://github.com/evdark/OpenCodeX"><img alt="repo" src="https://img.shields.io/badge/github-evdark%2FOpenCodeX-0d0d0d?style=flat-square&labelColor=111111" /></a>
+  <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-1a1a1a?style=flat-square&labelColor=111111" /></a>
 </p>
+
 
 <p align="center">
   <a href="README.md">English</a> |
@@ -39,30 +35,35 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+[![OpenCodeX](packages/web/src/assets/lander/screenshot.png)](https://github.com/evdark/OpenCodeX)
 
 ---
 
-### インストール
+### CLI（ターミナル）
 
 ```bash
-# YOLO
-curl -fsSL https://opencode.ai/install | bash
-
-# パッケージマネージャー
-npm i -g opencode-ai@latest        # bun/pnpm/yarn でもOK
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS と Linux（推奨。常に最新）
-brew install opencode              # macOS と Linux（公式 brew formula。更新頻度は低め）
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # どのOSでも
-nix run nixpkgs#opencode           # または github:anomalyco/opencode で最新 dev ブランチ
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash
 ```
 
-> [!TIP]
-> インストール前に 0.1.x より古いバージョンを削除してください。
+バイナリは `~/.opencode/bin/` に入ります:
+
+| binary | role |
+| --- | --- |
+| `ocx` | OpenCodeX CLI（実際に打つコマンド） |
+| `opencode` | 同じエンジン、スクリプト用 plain モード |
+
+```bash
+ocx --version
+ocx dashboard
+ocx setup
+ocx .                 # 現在のプロジェクトで tui
+```
+
+バージョンを固定:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.0.0
+```
 
 ### デスクトップアプリ (IDE)
 
@@ -83,20 +84,6 @@ rpm はこのカットには無し（packager に `rpmbuild` が必要）。
 
 **releases:** https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0
 
-#### インストールディレクトリ
-
-インストールスクリプトは、インストール先パスを次の優先順位で決定します。
-
-1. `$OPENCODE_INSTALL_DIR` - カスタムのインストールディレクトリ
-2. `$XDG_BIN_DIR` - XDG Base Directory Specification に準拠したパス
-3. `$HOME/bin` - 標準のユーザー用バイナリディレクトリ（存在する場合、または作成できる場合）
-4. `$HOME/.opencode/bin` - デフォルトのフォールバック
-
-```bash
-# 例
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
-```
 
 ### Agents
 

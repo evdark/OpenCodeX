@@ -1,18 +1,14 @@
 <p align="center">
-  <a href="https://opencode.ai">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
+  <a href="https://github.com/evdark/OpenCodeX">
+    <img src="docs/assets/brand/opencodex-mark.svg" alt="OpenCodeX" width="96" height="96">
   </a>
 </p>
-<p align="center">开源的 AI Coding Agent。</p>
+<p align="center"><strong>OpenCodeX</strong> — unofficial OpenCode fork · IDE + CLI · same engine</p>
 <p align="center">
-  <a href="https://opencode.ai/discord"><img alt="Discord" src="https://img.shields.io/discord/1391832426048651334?style=flat-square&label=discord" /></a>
-  <a href="https://www.npmjs.com/package/opencode-ai"><img alt="npm" src="https://img.shields.io/npm/v/opencode-ai?style=flat-square" /></a>
-  <a href="https://github.com/anomalyco/opencode/actions/workflows/publish.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/anomalyco/opencode/publish.yml?style=flat-square&branch=dev" /></a>
+  <a href="https://github.com/evdark/OpenCodeX"><img alt="repo" src="https://img.shields.io/badge/github-evdark%2FOpenCodeX-0d0d0d?style=flat-square&labelColor=111111" /></a>
+  <a href="LICENSE"><img alt="license" src="https://img.shields.io/badge/license-MIT-1a1a1a?style=flat-square&labelColor=111111" /></a>
 </p>
+
 
 <p align="center">
   <a href="README.md">English</a> |
@@ -39,30 +35,35 @@
   <a href="README.vi.md">Tiếng Việt</a>
 </p>
 
-[![OpenCode Terminal UI](packages/web/src/assets/lander/screenshot.png)](https://opencode.ai)
+[![OpenCodeX](packages/web/src/assets/lander/screenshot.png)](https://github.com/evdark/OpenCodeX)
 
 ---
 
-### 安装
+### CLI（终端）
 
 ```bash
-# 直接安装 (YOLO)
-curl -fsSL https://opencode.ai/install | bash
-
-# 软件包管理器
-npm i -g opencode-ai@latest        # 也可使用 bun/pnpm/yarn
-scoop install opencode             # Windows
-choco install opencode             # Windows
-brew install anomalyco/tap/opencode # macOS 和 Linux（推荐，始终保持最新）
-brew install opencode              # macOS 和 Linux（官方 brew formula，更新频率较低）
-sudo pacman -S opencode            # Arch Linux (Stable)
-paru -S opencode-bin               # Arch Linux (Latest from AUR)
-mise use -g opencode               # 任意系统
-nix run nixpkgs#opencode           # 或用 github:anomalyco/opencode 获取最新 dev 分支
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash
 ```
 
-> [!TIP]
-> 安装前请先移除 0.1.x 之前的旧版本。
+二进制安装到 `~/.opencode/bin/`：
+
+| binary | role |
+| --- | --- |
+| `ocx` | OpenCodeX CLI（你实际输入的命令） |
+| `opencode` | 同一引擎，脚本用 plain 模式 |
+
+```bash
+ocx --version
+ocx dashboard
+ocx setup
+ocx .                 # 在当前项目打开 tui
+```
+
+锁定版本：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.0.0
+```
 
 ### 桌面应用 (IDE)
 
@@ -83,20 +84,6 @@ macOS（未签名）：右键 → 打开。Gatekeeper 挺有性格。`(￣ヘ￣
 
 **releases:** https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0
 
-#### 安装目录
-
-安装脚本按照以下优先级决定安装路径：
-
-1. `$OPENCODE_INSTALL_DIR` - 自定义安装目录
-2. `$XDG_BIN_DIR` - 符合 XDG 基础目录规范的路径
-3. `$HOME/bin` - 如果存在或可创建的用户二进制目录
-4. `$HOME/.opencode/bin` - 默认备用路径
-
-```bash
-# 示例
-OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
-XDG_BIN_DIR=$HOME/.local/bin curl -fsSL https://opencode.ai/install | bash
-```
 
 ### Agents
 
