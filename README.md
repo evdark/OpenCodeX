@@ -18,7 +18,7 @@ you run it. it edits files. sometimes it works. `¯\_(ツ)_/¯`
 
 | product | what you get | how you install |
 | --- | --- | --- |
-| **IDE** | desktop app (tray, queue, preview, tabs) | [dmg / exe / AppImage](https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0) |
+| **IDE** | desktop app (tray, queue, preview, tabs) | [dmg / exe / AppImage](https://github.com/evdark/OpenCodeX/releases/latest) |
 | **CLI** | `ocx` in the terminal | curl one-liner below |
 
 [![repo](https://img.shields.io/badge/github-evdark%2FOpenCodeX-0d0d0d?style=flat-square&labelColor=111111)](https://github.com/evdark/OpenCodeX)
@@ -78,27 +78,27 @@ ocx .                 # tui in current project
 pin a version if you like boring:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.0.0
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.16
 ```
 
 ### ide (desktop)
 
-grab an installer from the [v1.0.0 release](https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0). double-click. move on with your life.
+grab an installer from the [latest release](https://github.com/evdark/OpenCodeX/releases/latest). double-click. move on with your life.
 
 | platform | file |
 | --- | --- |
-| mac apple silicon | [opencodex-desktop-mac-arm64.dmg](https://github.com/evdark/OpenCodeX/releases/download/v1.0.0/opencodex-desktop-mac-arm64.dmg) |
-| mac intel | [opencodex-desktop-mac-x64.dmg](https://github.com/evdark/OpenCodeX/releases/download/v1.0.0/opencodex-desktop-mac-x64.dmg) |
-| windows x64 | [opencodex-desktop-win-x64.exe](https://github.com/evdark/OpenCodeX/releases/download/v1.0.0/opencodex-desktop-win-x64.exe) |
-| windows arm64 | [opencodex-desktop-win-arm64.exe](https://github.com/evdark/OpenCodeX/releases/download/v1.0.0/opencodex-desktop-win-arm64.exe) |
-| linux x64 AppImage | [opencodex-desktop-linux-x86_64.AppImage](https://github.com/evdark/OpenCodeX/releases/download/v1.0.0/opencodex-desktop-linux-x86_64.AppImage) |
-| linux arm64 AppImage | [opencodex-desktop-linux-arm64.AppImage](https://github.com/evdark/OpenCodeX/releases/download/v1.0.0/opencodex-desktop-linux-arm64.AppImage) |
-| linux deb (amd64) | [opencodex-desktop-linux-amd64.deb](https://github.com/evdark/OpenCodeX/releases/download/v1.0.0/opencodex-desktop-linux-amd64.deb) |
+| mac apple silicon | [opencodex-desktop-mac-arm64.dmg](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-mac-arm64.dmg) |
+| mac intel | [opencodex-desktop-mac-x64.dmg](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-mac-x64.dmg) |
+| windows x64 | [opencodex-desktop-win-x64.exe](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-win-x64.exe) |
+| windows arm64 | [opencodex-desktop-win-arm64.exe](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-win-arm64.exe) |
+| linux x64 AppImage | [opencodex-desktop-linux-x86_64.AppImage](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-x86_64.AppImage) |
+| linux arm64 AppImage | [opencodex-desktop-linux-arm64.AppImage](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-arm64.AppImage) |
+| linux deb (amd64) | [opencodex-desktop-linux-amd64.deb](https://github.com/evdark/OpenCodeX/releases/latest/download/opencodex-desktop-linux-amd64.deb) |
 
 mac: unsigned → right-click → open. gatekeeper is a personality. `(￣ヘ￣)`  
 rpm: not in this cut (needs `rpmbuild` on the packager).
 
-**releases:** https://github.com/evdark/OpenCodeX/releases/tag/v1.0.0
+**releases:** https://github.com/evdark/OpenCodeX/releases/latest
 
 ---
 
