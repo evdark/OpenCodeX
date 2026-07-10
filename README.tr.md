@@ -62,7 +62,7 @@ ocx .                 # geçerli projede tui
 Sürümü sabitle:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.16
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.18
 ```
 
 ### Masaüstü uygulaması (IDE)

@@ -38,7 +38,7 @@ Options:
 
 Examples:
     curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash
-    curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.0.0
+    curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.18
     ./install --binary /path/to/opencode
 EOF
 }

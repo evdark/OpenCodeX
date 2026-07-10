@@ -62,7 +62,7 @@ ocx .                 # 현재 프로젝트에서 tui
 버전 고정:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.16
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.18
 ```
 
 ### 데스크톱 앱 (IDE)

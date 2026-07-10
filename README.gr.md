@@ -62,7 +62,7 @@ ocx .                 # tui στο τρέχον project
 Καρφίτσωσε έκδοση:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.16
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.18
 ```
 
 ### Εφαρμογή Desktop (IDE)

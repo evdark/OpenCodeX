@@ -1,59 +1,43 @@
 # CLI Updates
 
-OpenCode+ keeps the `opencode` command name for upstream compatibility, but its release lookup defaults to the OpenCode+ fork.
+OpenCodeX CLI upgrades use the same binary channel as the GitHub Releases installer.
 
-## Defaults
+## Install / upgrade
 
-CLI release checks use:
-
-```text
-evdark/opencode-plus
-```
-
-This affects:
-
-- `opencode upgrade`
-- background auto-update polling
-- curl-based upgrades for binaries installed under `~/.opencode/bin`
-
-## Installer
-
-The installer points at OpenCode+ releases:
+Latest release (recommended):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/evdark/opencode-plus/dev/install | bash
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash
 ```
 
-Install a specific version:
+Pin a version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/evdark/opencode-plus/dev/install | bash -s -- --version 1.17.15
+curl -fsSL https://raw.githubusercontent.com/evdark/OpenCodeX/main/install | bash -s -- --version 1.17.18
 ```
 
-To work from source instead of an installed release:
+This installs:
+
+- `~/.opencode/bin/opencode` — engine
+- `~/.opencode/bin/ocx` — OpenCodeX wrapper (`OPENCODEX=1`)
+- `~/.opencode/bin/ocplus` — legacy alias
+
+Desktop IDE installers and auto-update feeds:
+
+- https://github.com/evdark/OpenCodeX/releases/latest
+- artifacts: `opencodex-desktop-*`
+- updater metadata: `latest.yml`, `latest-mac.yml`, `latest-linux.yml`
+
+## From source
 
 ```bash
-git clone https://github.com/evdark/opencode-plus.git && cd opencode-plus
+git clone https://github.com/evdark/OpenCodeX.git && cd OpenCodeX
 bun install
-bun dev .
+OPENCODEX=1 bun dev .
 ```
 
-## Custom Fork Channels
+## Notes
 
-Maintainers of downstream forks can override the release source:
-
-```bash
-OPENCODE_RELEASE_OWNER=my-org OPENCODE_RELEASE_REPO=my-fork opencode upgrade
-```
-
-For package-manager based installs, set `OPENCODE_NPM_PACKAGE` once a fork-specific npm package exists:
-
-```bash
-OPENCODE_NPM_PACKAGE=opencode-plus-ai opencode upgrade --method npm
-```
-
-## Compatibility Notes
-
-- The binary command remains `opencode` to avoid breaking existing shell scripts and integrations.
-- Release archive names remain upstream-compatible for CLI binaries.
-- Desktop artifacts use `opencode-plus-desktop-*` names and separate app IDs.
+- The curl installer always reads `releases/latest` unless `--version` is set.
+- Desktop auto-update points at `evdark/OpenCodeX` (not upstream OpenCode).
+- Prefer `ocx` over `opencode` for OpenCodeX features.
