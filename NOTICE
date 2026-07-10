@@ -1,0 +1,31 @@
+OpenCodeX
+=========
+
+OpenCodeX is an independent, unofficial fork of OpenCode.
+
+Upstream project
+----------------
+Name: OpenCode
+Repository: https://github.com/anomalyco/opencode
+License: MIT License (see LICENSE)
+
+This repository contains code originally from OpenCode and modifications
+made for the OpenCodeX product (desktop IDE shell, CLI branding, and
+related tooling).
+
+Trademark / affiliation
+-----------------------
+OpenCodeX is not affiliated with, endorsed by, or sponsored by the
+OpenCode project or Anomalyco, unless explicitly stated by them.
+
+"OpenCode" and related marks belong to their respective owners.
+OpenCodeX uses the upstream MIT-licensed code under the terms of that
+license. This project does not claim to be the official OpenCode product.
+
+Copyright
+---------
+- Original OpenCode code: Copyright (c) OpenCode contributors
+  (see upstream repository history and LICENSE)
+- OpenCodeX modifications: Copyright (c) OpenCodeX contributors
+
+Full license text: LICENSE

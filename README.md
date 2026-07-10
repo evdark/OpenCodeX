@@ -32,7 +32,10 @@ you run it. it edits files. sometimes it works. `¯\_(ツ)_/¯`
 
 ## what this is
 
-MIT fork of [OpenCode](https://github.com/anomalyco/opencode).  
+**OpenCodeX is an unofficial fork of [OpenCode](https://github.com/anomalyco/opencode)** (MIT).  
+not affiliated with, endorsed by, or “the official” OpenCode product.  
+upstream code stays under MIT; our changes are also MIT. full note: [NOTICE](NOTICE).
+
 we kept the agent spine. we put a product shell on top so desktop and cli stop living separate lives.
 
 ```
@@ -173,7 +176,14 @@ bun --cwd packages/desktop package
 
 ---
 
-## license
+## license & attribution
 
-MIT. upstream OpenCode is also MIT. we are a fork, not a clone of the brand.  
+- **License:** [MIT](LICENSE) (same family as upstream OpenCode)
+- **Upstream:** [anomalyco/opencode](https://github.com/anomalyco/opencode)
+- **Fork notice / non-affiliation:** [NOTICE](NOTICE)
+
+OpenCodeX is a **derivative work** of OpenCode under the MIT license.  
+we are **not** claiming to be OpenCode Inc/Anomalyco or the official app.  
+trademarks stay with their owners. code reuse is under MIT terms only.
+
 if something breaks, open an issue. if it doesn't, also fine. `ヽ(・∀・)ﾉ`
